@@ -79,9 +79,9 @@ fun BetaInfoBottomSheet(modifier: Modifier = Modifier) {
     val versionName = remember {
         try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName ?: "0.7.5-beta"
+            packageInfo.versionName ?: "alpha pt 1"
         } catch (_: Exception) {
-            "0.7.5-beta"
+            "alpha pt 1"
         }
     }
 
