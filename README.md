@@ -1,7 +1,7 @@
 # PastaPlayer 🎵
 
 <p align="center">
-  <img src="assets/PastaPlayer.svg" alt="App Icon" height="250"/>
+  <img src="assets/icon.png" alt="App Icon" width="220" height="220"/>
 </p>
 <p align="center">
   <strong>A beautiful, feature-rich music player for Android</strong><br>
