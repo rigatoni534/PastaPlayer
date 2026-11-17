@@ -626,11 +626,14 @@
     <string name="about_signal_community_first">Community-first</string>
     <string name="about_signal_material3">Material 3 expressive</string>
     <string name="about_no_contributors">No contributors found right now. Please try again later.</string>
-    <string name="about_fork_title">A fork of PixelPlayer</string>
-    <string name="about_fork_body">PastaPlayer is a fork of PixelPlayer, the open source Android music player created by Theo Vilardo. All credit for the original app goes to Theo and the PixelPlayer contributors.</string>
-    <string name="about_fork_upstream_link">View the original PixelPlayer repository</string>
     <string name="about_maintainer_title">Maintainer</string>
     <string name="about_maintainer_subtitle">The person behind PastaPlayer.</string>
+    <string name="about_original_repo_title">Original Repo</string>
+    <string name="about_original_repo_subtitle">PastaPlayer is a fork of PixelPlayer, the open source music player created by Theo Vilardo. The creator, links, community and contributors below all belong to the original project.</string>
+    <string name="about_original_repo_github_subtitle">PixelPlayer repo</string>
+    <string name="about_original_repo_telegram_subtitle">Original community</string>
+    <string name="about_cd_open_upstream_repo">Open the original PixelPlayer repository</string>
+    <string name="about_cd_join_upstream_telegram">Join the original PixelPlayer Telegram community</string>
     <string name="about_spotlight_title">Community spotlight</string>
     <string name="about_spotlight_subtitle">Recognition for collaborators with major impact.</string>
     <string name="about_licenses_title">Licenses and notices</string>
@@ -643,7 +646,7 @@
     <string name="third_party_notices_close">Close</string>
     <string name="third_party_notices_load_error">The bundled third-party notice could not be loaded.</string>
     <string name="about_contributors_section_title">Open source contributors</string>
-    <string name="about_contributors_section_subtitle">Live contributor list from GitHub.</string>
+    <string name="about_contributors_section_subtitle">Live contributor list from the original PixelPlayer repo.</string>
     <string name="about_contributions_format">%1$d contrib.</string>
     <string name="about_github_label">GitHub</string>
     <string name="about_github_subtitle">Repository</string>

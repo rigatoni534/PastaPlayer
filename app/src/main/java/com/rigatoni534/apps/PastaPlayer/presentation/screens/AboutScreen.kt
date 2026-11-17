@@ -47,7 +47,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Gavel
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material3.CircularProgressIndicator
@@ -129,6 +128,7 @@ private data class Contributor(
 )
 
 private const val UpstreamRepositoryUrl = "https://github.com/theovilardo/PixelPlayer"
+private const val UpstreamTelegramUrl = "https://t.me/thevelopersupport"
 
 private val CoreMaintainer = Contributor(
     id = "rigatoni534",
@@ -138,6 +138,16 @@ private val CoreMaintainer = Contributor(
     avatarUrl = "https://github.com/rigatoni534.png",
     iconRes = R.drawable.round_developer_board_24,
     githubUrl = "https://github.com/rigatoni534",
+)
+
+private val UpstreamCreator = Contributor(
+    id = "theovilardo",
+    displayName = "Theo Vilardo",
+    role = "Creator of PixelPlayer",
+    detail = "Original author of PixelPlayer, the project PastaPlayer is forked from.",
+    avatarUrl = "https://avatars.githubusercontent.com/u/26845343?v=4",
+    iconRes = R.drawable.round_developer_board_24,
+    githubUrl = "https://github.com/theovilardo",
 )
 
 private val PinnedCommunityMembers = listOf(
@@ -202,7 +212,7 @@ fun AboutScreen(
 
     LaunchedEffect(Unit) {
         try {
-            val result = githubService.fetchContributors()
+            val result = githubService.fetchContributors(owner = "theovilardo", repo = "PixelPlayer")
             result.onSuccess { githubContributors ->
                 contributors = githubContributors
                     .filter { normalizeHandle(it.login) != CoreMaintainer.id }
@@ -253,6 +263,7 @@ fun AboutScreen(
     val excludedIds = remember(spotlightContributors) {
         buildSet {
             add(CoreMaintainer.id)
+            add(UpstreamCreator.id)
             spotlightContributors.forEach { spotlight ->
                 add(spotlight.id)
                 addAll(PinnedAliases[spotlight.id].orEmpty())
@@ -381,16 +392,6 @@ fun AboutScreen(
                 )
             }
 
-            item(key = "fork_notice") {
-                ForkNoticeCard(
-                    onOpenUpstream = { openUrl(context, UpstreamRepositoryUrl) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 12.dp),
-                )
-            }
-
             item(key = "maintainer_title") {
                 AboutSectionHeader(
                     title = stringResource(R.string.about_maintainer_title),
@@ -409,6 +410,53 @@ fun AboutScreen(
                     showContributionCount = false,
                     onCardClick = CoreMaintainer.githubUrl?.let { url -> { openUrl(context, url) } },
                 )
+            }
+
+            item(key = "original_repo_title") {
+                AboutSectionHeader(
+                    title = stringResource(R.string.about_original_repo_title),
+                    subtitle = stringResource(R.string.about_original_repo_subtitle),
+                    modifier = Modifier.padding(top = 24.dp),
+                )
+            }
+
+            item(key = "original_repo_creator") {
+                ContributorCard(
+                    contributor = UpstreamCreator,
+                    shape = expressiveListShape(index = 0, count = 1),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    showContributionCount = false,
+                    onCardClick = UpstreamCreator.githubUrl?.let { url -> { openUrl(context, url) } },
+                )
+            }
+
+            item(key = "original_repo_links") {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    SocialChip(
+                        label = stringResource(R.string.about_github_label),
+                        subtitle = stringResource(R.string.about_original_repo_github_subtitle),
+                        iconRes = R.drawable.github,
+                        contentDescription = stringResource(R.string.about_cd_open_upstream_repo),
+                        onClick = { openUrl(context, UpstreamRepositoryUrl) },
+                        modifier = Modifier.weight(1f),
+                    )
+                    SocialChip(
+                        label = stringResource(R.string.about_telegram_label),
+                        subtitle = stringResource(R.string.about_original_repo_telegram_subtitle),
+                        iconRes = R.drawable.telegram,
+                        contentDescription = stringResource(R.string.about_cd_join_upstream_telegram),
+                        onClick = { openUrl(context, UpstreamTelegramUrl) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
 
             item(key = "spotlight_title") {
@@ -667,27 +715,14 @@ private fun AboutHeroCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Row(
+                SocialChip(
+                    label = stringResource(R.string.about_github_label),
+                    subtitle = stringResource(R.string.about_github_subtitle),
+                    iconRes = R.drawable.github,
+                    contentDescription = stringResource(R.string.about_cd_open_github_repo),
+                    onClick = { openUrl(context, "https://github.com/rigatoni534/PastaPlayer") },
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    SocialChip(
-                        label = stringResource(R.string.about_github_label),
-                        subtitle = stringResource(R.string.about_github_subtitle),
-                        iconRes = R.drawable.github,
-                        contentDescription = stringResource(R.string.about_cd_open_github_repo),
-                        onClick = { openUrl(context, "https://github.com/rigatoni534/PastaPlayer") },
-                        modifier = Modifier.weight(1f),
-                    )
-                    SocialChip(
-                        label = stringResource(R.string.about_telegram_label),
-                        subtitle = stringResource(R.string.about_telegram_subtitle),
-                        iconRes = R.drawable.telegram,
-                        contentDescription = stringResource(R.string.about_cd_join_telegram),
-                        onClick = { openUrl(context, "https://t.me/thevelopersupport") },
-                        modifier = Modifier.weight(1f),
-                    )
-                }
+                )
             }
         }
     }
@@ -783,58 +818,6 @@ private fun CommunitySignalsRow() {
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun ForkNoticeCard(
-    onOpenUpstream: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        modifier = modifier,
-        shape = expressiveListShape(index = 0, count = 1),
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        tonalElevation = 2.dp,
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Rounded.Info,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.size(20.dp),
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = stringResource(R.string.about_fork_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = stringResource(R.string.about_fork_body),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = stringResource(R.string.about_fork_upstream_link),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable(role = Role.Button, onClick = onOpenUpstream)
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
-            )
         }
     }
 }
