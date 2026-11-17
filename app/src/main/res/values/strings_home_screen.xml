@@ -274,4 +274,17 @@
     <string name="song_count_singular">%1$d Song</string>
     <string name="song_count_plural">%1$d Songs</string>
     <string name="stats_week_label">Week %1$d</string>
+
+    <!-- Home dashboard -->
+    <string name="home_metrics_songs_on_device">Songs on device</string>
+    <string name="home_metrics_storage_used">Storage used</string>
+    <string name="home_metrics_playlists">Playlists</string>
+    <string name="home_metrics_favorites">Favorites</string>
+    <string name="home_favorites_title">Favorites</string>
+    <string name="home_favorites_subtitle">Your favorite playlists and songs, one tap away</string>
+    <string name="home_favorites_playlists_label">Favorite playlists</string>
+    <string name="home_favorites_songs_label">Favorite songs</string>
+    <string name="home_favorites_empty_body">Nothing here yet. Favorite a song with the heart button, or favorite a playlist from its screen, and it will appear here.</string>
+    <string name="home_favorites_play_all">Play all</string>
+    <string name="home_favorites_shuffle">Shuffle favorites</string>
 </resources>

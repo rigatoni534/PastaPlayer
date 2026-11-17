@@ -93,7 +93,9 @@ import rigatoni534.apps.PastaPlayer.presentation.jellyfin.dashboard.JellyfinDash
 import rigatoni534.apps.PastaPlayer.presentation.navidrome.dashboard.NavidromeDashboardViewModel
 import rigatoni534.apps.PastaPlayer.presentation.qqmusic.dashboard.QqMusicDashboardViewModel
 import rigatoni534.apps.PastaPlayer.presentation.components.DailyMixSection
+import rigatoni534.apps.PastaPlayer.presentation.components.HomeFavoritesSection
 import rigatoni534.apps.PastaPlayer.presentation.components.HomeGradientTopBar
+import rigatoni534.apps.PastaPlayer.presentation.components.HomeMetricsRow
 import rigatoni534.apps.PastaPlayer.presentation.components.HomeOptionsBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
 import rigatoni534.apps.PastaPlayer.presentation.components.RecentlyPlayedSection
@@ -107,7 +109,9 @@ import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.PlayingEqIc
 import rigatoni534.apps.PastaPlayer.presentation.navigation.Screen
 import rigatoni534.apps.PastaPlayer.presentation.components.StreamingProviderSheet
 import rigatoni534.apps.PastaPlayer.presentation.telegram.auth.TelegramLoginActivity
+import rigatoni534.apps.PastaPlayer.presentation.viewmodel.HomeMetricsViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
+import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SettingsViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.StatsViewModel
 import rigatoni534.apps.PastaPlayer.ui.theme.ExpTitleTypography
@@ -115,6 +119,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
@@ -135,6 +140,8 @@ fun HomeScreen(
     qqMusicViewModel: QqMusicDashboardViewModel = hiltViewModel(),
     navidromeViewModel: NavidromeDashboardViewModel = hiltViewModel(),
     jellyfinViewModel: JellyfinDashboardViewModel = hiltViewModel(),
+    playlistViewModel: PlaylistViewModel = hiltViewModel(),
+    homeMetricsViewModel: HomeMetricsViewModel = hiltViewModel(),
     onOpenSidebar: () -> Unit
 ) {
     val context = LocalContext.current
@@ -259,6 +266,21 @@ fun HomeScreen(
 
     val homeStatsOverview by statsViewModel.homeOverview.collectAsStateWithLifecycle()
 
+    // Favorites and device metrics shown at the top of the redesigned home screen.
+    val deviceMetrics by homeMetricsViewModel.metrics.collectAsStateWithLifecycle()
+    val playlistUiState by playlistViewModel.uiState.collectAsStateWithLifecycle()
+    val favoritePlaylists = remember(playlistUiState.playlists) {
+        playlistUiState.playlists.filter { it.isFavorite }
+    }
+    val favoriteSongIds by playerViewModel.favoriteSongIds.collectAsStateWithLifecycle()
+    val favoriteSongs by remember(favoriteSongIds, playerViewModel) {
+        if (favoriteSongIds.isEmpty()) {
+            flowOf(emptyList())
+        } else {
+            playerViewModel.observeSongs(favoriteSongIds.toList())
+        }
+    }.collectAsStateWithLifecycle(initialValue = emptyList<Song>())
+
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val density = LocalDensity.current
     val scrollThresholdPx = remember(density) { with(density) { 180.dp.toPx() } }
@@ -344,6 +366,60 @@ fun HomeScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
+                item(
+                    key = "home_metrics",
+                    contentType = "home_metrics"
+                ) {
+                    HomeMetricsRow(
+                        songsOnDevice = deviceMetrics.songCount,
+                        storageUsedBytes = deviceMetrics.storageUsedBytes,
+                        playlistCount = playlistUiState.playlists.size,
+                        favoriteSongCount = favoriteSongIds.size,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+
+                item(
+                    key = "home_favorites",
+                    contentType = "home_favorites"
+                ) {
+                    HomeFavoritesSection(
+                        favoritePlaylists = favoritePlaylists,
+                        favoriteSongs = favoriteSongs,
+                        onPlaylistClick = { playlist ->
+                            navController.navigateSafely(
+                                Screen.PlaylistDetail.createRoute(playlist.id)
+                            )
+                        },
+                        onSongClick = { song ->
+                            playerViewModel.playSongs(
+                                songsToPlay = favoriteSongs,
+                                startSong = song,
+                                queueName = "Favorites"
+                            )
+                        },
+                        onPlayAll = {
+                            favoriteSongs.firstOrNull()?.let { firstSong ->
+                                playerViewModel.playSongs(
+                                    songsToPlay = favoriteSongs,
+                                    startSong = firstSong,
+                                    queueName = "Favorites"
+                                )
+                            }
+                        },
+                        onShuffle = {
+                            if (favoriteSongs.isNotEmpty()) {
+                                playerViewModel.playSongsShuffled(
+                                    songsToPlay = favoriteSongs,
+                                    queueName = "Favorites",
+                                    startAtZero = true
+                                )
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+
                 if (yourMixSongs.isEmpty()) {
                     item(
                         key = "your_mix_placeholder",

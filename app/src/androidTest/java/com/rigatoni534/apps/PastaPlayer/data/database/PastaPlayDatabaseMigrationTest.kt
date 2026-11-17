@@ -27,7 +27,7 @@ class PastaPlayDatabaseMigrationTest {
     @After
     fun tearDown() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        for (version in 25..41) {
+        for (version in 25..42) {
             context.deleteDatabase(databaseNameFor(version))
         }
         context.deleteDatabase(DB_NAME_33_TO_34)
@@ -38,7 +38,7 @@ class PastaPlayDatabaseMigrationTest {
 
     @Test
     fun migrateEveryExportedSchemaToLatest() {
-        for (startVersion in 25..41) {
+        for (startVersion in 25..42) {
             helper.createDatabase(databaseNameFor(startVersion), startVersion).close()
 
             helper.runMigrationsAndValidate(
@@ -304,7 +304,7 @@ class PastaPlayDatabaseMigrationTest {
     }
 
     private object PastaPlayDatabaseVersion {
-        const val LATEST = 42
+        const val LATEST = 43
     }
 
     companion object {
@@ -330,7 +330,8 @@ class PastaPlayDatabaseMigrationTest {
             PastaPlayDatabase.MIGRATION_38_39,
             PastaPlayDatabase.MIGRATION_39_40,
             PastaPlayDatabase.MIGRATION_40_41,
-            PastaPlayDatabase.MIGRATION_41_42
+            PastaPlayDatabase.MIGRATION_41_42,
+            PastaPlayDatabase.MIGRATION_42_43
         )
     }
 }

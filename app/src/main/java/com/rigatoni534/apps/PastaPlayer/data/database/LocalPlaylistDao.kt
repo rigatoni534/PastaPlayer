@@ -33,6 +33,9 @@ interface LocalPlaylistDao {
     @Update
     suspend fun updatePlaylist(entity: PlaylistEntity)
 
+    @Query("UPDATE playlists SET is_favorite = :isFavorite WHERE id = :playlistId")
+    suspend fun setPlaylistFavorite(playlistId: String, isFavorite: Boolean)
+
     @Query("DELETE FROM playlists WHERE id = :playlistId")
     suspend fun deletePlaylist(playlistId: String)
 

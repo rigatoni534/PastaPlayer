@@ -96,6 +96,10 @@ class PlaylistPreferencesRepository @Inject constructor(
         clearPlaylistSongOrderMode(playlistId)
     }
 
+    suspend fun setPlaylistFavorite(playlistId: String, isFavorite: Boolean) {
+        localPlaylistDao.setPlaylistFavorite(playlistId, isFavorite)
+    }
+
     suspend fun renamePlaylist(playlistId: String, newName: String) {
         editMutex.withLock {
             ensureMigratedIfNeeded()

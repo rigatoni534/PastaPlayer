@@ -36,7 +36,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         AiCacheEntity::class,
         AiUsageEntity::class
     ],
-    version = 42,
+    version = 43,
     exportSchema = true
 )
 abstract class PastaPlayDatabase : RoomDatabase() {
@@ -1526,6 +1526,12 @@ abstract class PastaPlayDatabase : RoomDatabase() {
                 createSongsSearchVirtualTable(db)
                 installSongsSearchSyncTriggers(db)
                 rebuildSongsSearchIndex(db)
+            }
+        }
+
+        val MIGRATION_42_43 = object : Migration(42, 43) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE playlists ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0")
             }
         }
 

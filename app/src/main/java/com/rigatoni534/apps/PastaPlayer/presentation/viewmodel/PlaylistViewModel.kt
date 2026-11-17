@@ -576,6 +576,17 @@ class PlaylistViewModel @Inject constructor(
         }
     }
 
+    fun setPlaylistFavorite(playlistId: String, isFavorite: Boolean) {
+        if (isFolderPlaylistId(playlistId)) return
+        viewModelScope.launch {
+            runCatching {
+                playlistPreferencesRepository.setPlaylistFavorite(playlistId, isFavorite)
+            }.onFailure { throwable ->
+                Log.e("PlaylistViewModel", "Failed to update playlist favorite state", throwable)
+            }
+        }
+    }
+
     fun updatePlaylistParameters(
         playlistId: String,
         name: String,

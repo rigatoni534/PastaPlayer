@@ -37,6 +37,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
@@ -303,6 +305,36 @@ fun PlaylistDetailScreen(
                     }
                 },
                 actions = {
+                    currentPlaylist?.takeIf { !isFolderPlaylist }?.let { playlist ->
+                        IconButton(
+                            onClick = {
+                                playlistViewModel.setPlaylistFavorite(
+                                    playlistId = playlist.id,
+                                    isFavorite = !playlist.isFavorite
+                                )
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (playlist.isFavorite) {
+                                    Icons.Rounded.Favorite
+                                } else {
+                                    Icons.Rounded.FavoriteBorder
+                                },
+                                contentDescription = stringResource(
+                                    if (playlist.isFavorite) {
+                                        R.string.playlist_favorite_remove
+                                    } else {
+                                        R.string.playlist_favorite_add
+                                    }
+                                ),
+                                tint = if (playlist.isFavorite) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
+                            )
+                        }
+                    }
                     IconButton(
                         onClick = {
                             playerViewModel.showSortingSheet() 
