@@ -755,6 +755,9 @@
     <string name="rigakizzy_status_connected">Status: connected</string>
     <string name="rigakizzy_preset_title">Presence format</string>
     <string name="rigakizzy_preset_subtitle">Choose how the song is arranged in your Discord activity</string>
+    <string name="rigakizzy_preview_title">Preview</string>
+    <string name="rigakizzy_preview_sample_song">Song title</string>
+    <string name="rigakizzy_preview_sample_artist">Artist name</string>
     <string name="rigakizzy_preset_player_title">PastaPlayer · song · artist</string>
     <string name="rigakizzy_preset_artist_title">Artist · song · PastaPlayer</string>
     <string name="rigakizzy_preset_song_title">Song · artist · PastaPlayer</string>
@@ -785,6 +788,7 @@
     <string name="rigakizzy_setup_login">Log in with Discord</string>
     <string name="rigakizzy_setup_connected">Discord connected. Your activity will start with your next song.</string>
     <string name="rigakizzy_setup_later">You can change the format, application ID and images later in Settings → Rigakizzy.</string>
+    <string name="rigakizzy_setup_skip_hint">Not interested? Tap Next to skip this step.</string>
     <string name="vault_setup_title">Song Vault</string>
     <string name="vault_setup_subtitle">Optional: keep songs out of shared storage</string>
     <string name="vault_setup_body">Song Vault moves songs into PastaPlayer\'s private storage so they no longer sit in your music folders. You can vault and restore songs from the library at any time.</string>

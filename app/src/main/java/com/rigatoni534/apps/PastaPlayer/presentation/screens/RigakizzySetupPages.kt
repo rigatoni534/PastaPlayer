@@ -111,6 +111,12 @@ fun RigakizzySetupPage(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
+            text = stringResource(R.string.rigakizzy_setup_skip_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Text(
             text = stringResource(R.string.setup_extras_themes_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant

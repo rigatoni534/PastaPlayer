@@ -45,6 +45,8 @@ class DiscordGatewayClient @Inject constructor() {
     private var resumeGatewayUrl: String? = null
     private var token: String? = null
     private var pendingPresence: DiscordPresence? = null
+    private var lastPresenceSentAt = 0L
+    private var pendingFlush: Job? = null
     private val connectedToAccount = AtomicBoolean(false)
     private val running = AtomicBoolean(false)
     private val _connected = kotlinx.coroutines.flow.MutableStateFlow(false)
@@ -61,7 +63,7 @@ class DiscordGatewayClient @Inject constructor() {
         pendingPresence = presence
         if (alreadyRunning) {
             // Already connecting/connected on this token: just refresh the activity.
-            if (connectedToAccount.get()) presence?.let { webSocket?.send(presenceFrame(it)) }
+            if (connectedToAccount.get()) presence?.let { updatePresence(it) }
             return
         }
         running.set(true)
@@ -70,15 +72,33 @@ class DiscordGatewayClient @Inject constructor() {
 
     fun updatePresence(presence: DiscordPresence) {
         pendingPresence = presence
-        if (connectedToAccount.get()) {
-            webSocket?.send(presenceFrame(presence))
+        if (!connectedToAccount.get()) return
+        // Discord rate limits presence updates, so coalesce bursts from pausing/resuming.
+        val elapsed = System.currentTimeMillis() - lastPresenceSentAt
+        if (elapsed >= MIN_PRESENCE_INTERVAL_MS) {
+            sendPresenceNow(presence)
+        } else {
+            pendingFlush?.cancel()
+            pendingFlush = scope.launch {
+                delay(MIN_PRESENCE_INTERVAL_MS - elapsed)
+                pendingPresence?.let { sendPresenceNow(it) }
+            }
         }
+    }
+
+    private fun sendPresenceNow(presence: DiscordPresence) {
+        if (!connectedToAccount.get()) return
+        lastPresenceSentAt = System.currentTimeMillis()
+        webSocket?.send(presenceFrame(presence))
     }
 
     fun disconnect() {
         running.set(false)
         heartbeatJob?.cancel()
         heartbeatJob = null
+        pendingFlush?.cancel()
+        pendingFlush = null
+        lastPresenceSentAt = 0L
         connectedToAccount.set(false)
         _connected.value = false
         sequence = 0
@@ -116,6 +136,12 @@ class DiscordGatewayClient @Inject constructor() {
             connectedToAccount.set(false)
             _connected.value = false
             heartbeatJob?.cancel()
+            if (code in FATAL_CLOSE_CODES) {
+                // Invalid/expired token or a banned session: stop instead of retrying forever.
+                running.set(false)
+                Log.w(TAG, "Gateway closed with non-recoverable code=$code; presence stopped")
+                return
+            }
             if (running.get() && code != 1000) {
                 scope.launch {
                     delay(RECONNECT_DELAY_MS)
@@ -129,6 +155,11 @@ class DiscordGatewayClient @Inject constructor() {
             connectedToAccount.set(false)
             _connected.value = false
             heartbeatJob?.cancel()
+            if (response?.code == 401) {
+                running.set(false)
+                Log.w(TAG, "Gateway rejected the token; presence stopped")
+                return
+            }
             if (running.get()) {
                 scope.launch {
                     delay(RECONNECT_DELAY_MS)
@@ -162,11 +193,13 @@ class DiscordGatewayClient @Inject constructor() {
             }
             OP_HELLO -> {
                 establishSession()
-                val interval = frame["d"]?.jsonObject
-                    ?.get("heartbeat_interval")
-                    ?.jsonPrimitive
-                    ?.content?.toLongOrNull()
-                    ?: DEFAULT_HEARTBEAT_MS
+                                val interval = runCatching {
+                    frame["d"]?.jsonObject
+                        ?.get("heartbeat_interval")
+                        ?.jsonPrimitive
+                        ?.content
+                        ?.toLongOrNull()
+                }.getOrNull() ?: DEFAULT_HEARTBEAT_MS
                 startHeartbeat(interval)
             }
         }
@@ -184,12 +217,12 @@ class DiscordGatewayClient @Inject constructor() {
                 if (!resumeUrl.isNullOrBlank()) {
                     resumeGatewayUrl = "$resumeUrl/?v=10&encoding=json"
                 }
-                pendingPresence?.let { webSocket?.send(presenceFrame(it)) }
+                pendingPresence?.let { sendPresenceNow(it) }
             }
             "RESUMED" -> {
                 connectedToAccount.set(true)
                 _connected.value = true
-                pendingPresence?.let { webSocket?.send(presenceFrame(it)) }
+                pendingPresence?.let { sendPresenceNow(it) }
             }
         }
     }
@@ -224,6 +257,8 @@ class DiscordGatewayClient @Inject constructor() {
         private const val DEFAULT_HEARTBEAT_MS = 41_250L
         private const val RECONNECT_DELAY_MS = 2_000L
         private const val INVALID_SESSION_DELAY_MS = 1_500L
+        private const val MIN_PRESENCE_INTERVAL_MS = 1_500L
+        private val FATAL_CLOSE_CODES = setOf(4004, 4010, 4011, 4012, 4013, 4014)
         private const val OP_DISPATCH = 0
         private const val OP_HEARTBEAT = 1
         private const val OP_RECONNECT = 7

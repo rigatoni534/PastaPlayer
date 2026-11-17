@@ -1,6 +1,7 @@
 package rigatoni534.apps.PastaPlayer.presentation.screens
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.webkit.JavascriptInterface
@@ -9,7 +10,6 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -166,6 +166,8 @@ fun RigakizzySettingsSection(
             }
         )
 
+        PresencePreviewCard(settings)
+
         if (settings.preset == RigakizzyPreset.CUSTOM) {
             CustomPresenceEditor(
                 settings = settings,
@@ -220,6 +222,77 @@ fun RigakizzySettingsSection(
         )
     }
 }
+
+/** Shows how the three activity lines look with the selected format. */
+@Composable
+private fun PresencePreviewCard(settings: RigakizzySettings) {
+    val song = stringResource(R.string.rigakizzy_preview_sample_song)
+    val artist = stringResource(R.string.rigakizzy_preview_sample_artist)
+    val player = "PastaPlayer"
+    val name: String
+    val details: String
+    val state: String
+    when (settings.preset) {
+        RigakizzyPreset.PLAYER_TITLE -> {
+            name = player; details = song; state = artist
+        }
+        RigakizzyPreset.ARTIST_TITLE -> {
+            name = artist; details = song; state = player
+        }
+        RigakizzyPreset.SONG_TITLE -> {
+            name = song; details = artist; state = player
+        }
+        RigakizzyPreset.CUSTOM -> {
+            name = expandTemplate(settings.customName, song, artist, player).ifBlank { player }
+            details = expandTemplate(settings.customDetails, song, artist, player)
+            state = expandTemplate(settings.customState, song, artist, player)
+        }
+    }
+
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = RoundedCornerShape(10.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.rigakizzy_preview_title),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            if (details.isNotBlank()) {
+                Text(
+                    text = details,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            if (state.isNotBlank()) {
+                Text(
+                    text = state,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+private fun expandTemplate(template: String, song: String, artist: String, player: String): String =
+    template
+        .replace("{song}", song)
+        .replace("{artist}", artist)
+        .replace("{album}", song)
+        .replace("{player}", player)
 
 @Composable
 private fun statusLabel(status: RigakizzyStatus): String = when (status) {
@@ -534,7 +607,7 @@ fun DiscordLoginDialog(
                             webViewClient = object : WebViewClient() {
                                 override fun onPageFinished(view: WebView, url: String?) {
                                     super.onPageFinished(view, url)
-                                    view.evaluateJavascript(TOKEN_SNIPPET, null)
+                                    injectTokenIfDiscord(view, url)
                                 }
 
                                 override fun doUpdateVisitedHistory(
@@ -543,7 +616,7 @@ fun DiscordLoginDialog(
                                     isReload: Boolean,
                                 ) {
                                     super.doUpdateVisitedHistory(view, url, isReload)
-                                    view.evaluateJavascript(TOKEN_SNIPPET, null)
+                                    injectTokenIfDiscord(view, url)
                                 }
                             }
                             loadUrl("https://discord.com/login")
@@ -570,8 +643,16 @@ fun DiscordLoginDialog(
         val view = webView ?: return@LaunchedEffect
         repeat(40) {
             delay(1_500)
-            view.evaluateJavascript(TOKEN_SNIPPET, null)
+            injectTokenIfDiscord(view, view.url)
         }
+    }
+}
+
+/** Only touches Discord pages; the login window never runs scripts on anything else. */
+private fun injectTokenIfDiscord(webView: WebView, url: String?) {
+    val host = url?.let { runCatching { Uri.parse(it).host }.getOrNull() }.orEmpty()
+    if (host.endsWith("discord.com")) {
+        webView.evaluateJavascript(TOKEN_SNIPPET, null)
     }
 }
 

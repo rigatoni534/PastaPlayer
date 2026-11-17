@@ -140,8 +140,18 @@ class RigakizzyController @Inject constructor(
         }
 
         val presence = buildPresence(settings, state)
-        val signature = presence.toString()
-        if (!force && signature == lastPresenceSignature) return
+        // Ignore the timestamp portion so identical activities are not re-sent.
+        val signature = presence.activities.firstOrNull()?.let { activity ->
+            listOf(
+                activity.name,
+                activity.details,
+                activity.state,
+                activity.assets?.largeImage,
+                activity.assets?.smallImage,
+                activity.timestamps != null,
+            ).joinToString("|")
+        }
+        if (!force && signature != null && signature == lastPresenceSignature) return
         lastPresenceSignature = signature
 
         if (gateway.isConnected) {
