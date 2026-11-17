@@ -166,7 +166,8 @@ object AppModule {
             PastaPlayDatabase.MIGRATION_39_40,
             PastaPlayDatabase.MIGRATION_40_41,
             PastaPlayDatabase.MIGRATION_41_42,
-            PastaPlayDatabase.MIGRATION_42_43
+            PastaPlayDatabase.MIGRATION_42_43,
+            PastaPlayDatabase.MIGRATION_43_44
         )
             .addCallback(PastaPlayDatabase.createRuntimeArtifactsCallback())
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)

@@ -694,4 +694,30 @@
     <string name="settings_volume_section">Volume</string>
     <string name="settings_pause_on_volume_zero">Pause when volume reaches zero</string>
     <string name="settings_pause_on_volume_zero_desc">Automatically pause playback when the volume is set to 0</string>
+
+    <!-- Song Vault -->
+    <string name="settings_category_song_vault_title">Song Vault</string>
+    <string name="settings_category_song_vault_subtitle">Keep songs in private app storage</string>
+    <string name="song_vault_enable_title">Enable Song Vault</string>
+    <string name="song_vault_enable_description">Show vault actions in the song menu and manage vaulted songs here.</string>
+    <string name="song_vault_summary_format">%1$d songs · %2$s</string>
+    <string name="song_vault_summary_empty">No songs in the vault yet</string>
+    <string name="song_vault_explainer">Vaulted songs are copied into app-private storage and the public copy is deleted, so other apps and the system media scanner can\'t see them. Playlists, favorites and playback stats keep working because song ids never change.</string>
+    <string name="song_vault_vaulted_section">Songs in the vault</string>
+    <string name="song_vault_move_action">Move to vault</string>
+    <string name="song_vault_remove_action">Remove from vault</string>
+    <string name="song_vault_restore_action">Restore</string>
+    <string name="song_vault_restore_cd">Restore %1$s</string>
+    <string name="song_vault_moved_message">%1$s moved to the vault</string>
+    <string name="song_vault_restored_message">%1$s restored</string>
+    <string name="song_vault_move_failed">Couldn\'t move this song to the vault</string>
+    <string name="song_vault_restore_failed">Couldn\'t restore this song</string>
+    <string name="song_vault_local_only">Only local songs can be moved to the vault</string>
+    <string name="song_vault_public_copy_removed">Public copy deleted</string>
+    <string name="song_vault_public_copy_kept">Public copy kept — other apps can still see this file</string>
+    <string name="song_vault_delete_request_failed">Couldn\'t ask Android to delete the original copy</string>
+    <plurals name="song_vault_moved_songs">
+        <item quantity="one">%1$d song moved to the vault</item>
+        <item quantity="other">%1$d songs moved to the vault</item>
+    </plurals>
 </resources>

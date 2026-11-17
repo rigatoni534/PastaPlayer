@@ -95,7 +95,13 @@ data class SongEntity(
     @ColumnInfo(name = "telegram_chat_id") val telegramChatId: Long? = null,
     @ColumnInfo(name = "telegram_file_id") val telegramFileId: Int? = null,
     @ColumnInfo(name = "artists_json") val artistsJson: String? = null,
-    @ColumnInfo(name = "source_type", defaultValue = "0") val sourceType: Int = SourceType.LOCAL
+    @ColumnInfo(name = "source_type", defaultValue = "0") val sourceType: Int = SourceType.LOCAL,
+    /** True when the audio lives in the app-private Song Vault instead of shared storage. */
+    @ColumnInfo(name = "is_vaulted", defaultValue = "0") val isVaulted: Boolean = false,
+    /** Original content URI, kept so the song can be restored out of the vault. */
+    @ColumnInfo(name = "vault_original_uri") val vaultOriginalUri: String? = null,
+    /** Original file path, kept so the song can be restored out of the vault. */
+    @ColumnInfo(name = "vault_original_path") val vaultOriginalPath: String? = null
 )
 
 private fun SongEntity.toSongInternal(artists: List<ArtistRef>): Song {

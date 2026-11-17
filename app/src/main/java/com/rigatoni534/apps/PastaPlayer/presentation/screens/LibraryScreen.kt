@@ -1928,6 +1928,8 @@ fun LibraryScreen(
     }
 
     // Multi-Selection Bottom Sheet
+    val isSongVaultEnabled by songInfoBottomSheetViewModel.isSongVaultEnabled.collectAsStateWithLifecycle()
+
     if (showMultiSelectionSheet && selectedSongs.isNotEmpty()) {
         val activity = context as? android.app.Activity
 
@@ -1975,6 +1977,15 @@ fun LibraryScreen(
             onBatchEdit = {
                 showMultiSelectionSheet = false
                 showBatchEditSheet = true
+            },
+            onMoveToVault = if (isSongVaultEnabled) {
+                {
+                    songInfoBottomSheetViewModel.moveSongsToVault(selectedSongs) { outcome ->
+                        Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                null
             }
         )
     }

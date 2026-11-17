@@ -546,6 +546,9 @@ fun SettingsCategoryScreen(
                                 onCustomColorChanged = settingsViewModel::setCustomThemeColor
                             )
                         }
+                        SettingsCategory.SONG_VAULT -> {
+                            SongVaultSettingsSection()
+                        }
                         SettingsCategory.APPEARANCE -> {
                             val useSmoothCorners by settingsViewModel.useSmoothCorners.collectAsStateWithLifecycle()
 

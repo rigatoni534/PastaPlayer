@@ -151,6 +151,7 @@ class UserPreferencesRepository @Inject constructor(
         val SHOW_QUEUE_HISTORY = booleanPreferencesKey("show_queue_history")
         val PLAYBACK_QUEUE_SNAPSHOT = stringPreferencesKey("playback_queue_snapshot_v1")
         val FULL_PLAYER_SHOW_FILE_INFO = booleanPreferencesKey("full_player_show_file_info")
+        val SONG_VAULT_ENABLED = booleanPreferencesKey("song_vault_enabled_v1")
         val FULL_PLAYER_DELAY_ALBUM = booleanPreferencesKey("full_player_delay_album")
         val FULL_PLAYER_DELAY_METADATA = booleanPreferencesKey("full_player_delay_metadata")
         val FULL_PLAYER_DELAY_PROGRESS = booleanPreferencesKey("full_player_delay_progress")
@@ -404,6 +405,16 @@ class UserPreferencesRepository @Inject constructor(
 
     suspend fun setShowPlayerFileInfo(show: Boolean) {
         dataStore.edit { it[PreferencesKeys.FULL_PLAYER_SHOW_FILE_INFO] = show }
+    }
+
+    // ─── Song Vault ──────────────────────────────────────────────────────────
+
+    /** Enables the Song Vault entry points (song info sheet and settings). */
+    val songVaultEnabledFlow: Flow<Boolean> =
+        pref { it[PreferencesKeys.SONG_VAULT_ENABLED] ?: true }
+
+    suspend fun setSongVaultEnabled(enabled: Boolean) {
+        dataStore.edit { it[PreferencesKeys.SONG_VAULT_ENABLED] = enabled }
     }
 
     val fullPlayerLoadingTweaksFlow: Flow<FullPlayerLoadingTweaks> =

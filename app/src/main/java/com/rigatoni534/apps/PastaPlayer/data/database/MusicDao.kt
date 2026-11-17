@@ -1,6 +1,7 @@
 package rigatoni534.apps.PastaPlayer.data.database
 
 import androidx.paging.PagingSource
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -67,7 +68,10 @@ private const val SONG_DETAIL_PROJECTION = """
     songs.telegram_chat_id AS telegram_chat_id,
     songs.telegram_file_id AS telegram_file_id,
     songs.artists_json AS artists_json,
-    songs.source_type AS source_type
+    songs.source_type AS source_type,
+    songs.is_vaulted AS is_vaulted,
+    songs.vault_original_uri AS vault_original_uri,
+    songs.vault_original_path AS vault_original_path
 """
 
 // Projection for list queries: excludes lyrics to prevent CursorWindow overflow (2MB limit)
@@ -77,8 +81,23 @@ private const val SONG_LIST_PROJECTION = """
     content_uri_string, album_art_uri_string, duration, genre, file_path,
     parent_directory_path, is_favorite, NULL AS lyrics, track_number, disc_number,
     year, date_added, mime_type, bitrate, sample_rate, telegram_chat_id,
-    telegram_file_id, artists_json, source_type
+    telegram_file_id, artists_json, source_type, is_vaulted, vault_original_uri,
+    vault_original_path
 """
+
+/**
+ * Song Vault location state for a single song. Used to rewrite the song row when the
+ * audio is moved into app-private storage and to put it back afterwards.
+ */
+data class VaultedSongRow(
+    val id: Long,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "content_uri_string") val contentUriString: String,
+    @ColumnInfo(name = "file_path") val filePath: String,
+    @ColumnInfo(name = "parent_directory_path") val parentDirectoryPath: String,
+    @ColumnInfo(name = "vault_original_uri") val vaultOriginalUri: String?,
+    @ColumnInfo(name = "vault_original_path") val vaultOriginalPath: String?
+)
 
 data class DeviceCapabilitySongRow(
     val filePath: String,
@@ -145,10 +164,36 @@ interface MusicDao {
     @Transaction
     suspend fun insertSongs(songs: List<SongEntity>) {
         if (songs.isEmpty()) return
-        val insertResults = insertSongsIgnoreConflicts(songs)
+        // Vaulted songs keep pointing at their private copy even when a media scan
+        // reports the original public path again.
+        val vaultedById = if (songs.isEmpty()) {
+            emptyMap()
+        } else {
+            getVaultedSongRows(songs.map { it.id }).associateBy { it.id }
+        }
+        val mergedSongs = if (vaultedById.isEmpty()) {
+            songs
+        } else {
+            songs.map { incoming ->
+                val vaulted = vaultedById[incoming.id]
+                if (vaulted == null) {
+                    incoming
+                } else {
+                    incoming.copy(
+                        contentUriString = vaulted.contentUriString,
+                        filePath = vaulted.filePath,
+                        parentDirectoryPath = vaulted.parentDirectoryPath,
+                        isVaulted = true,
+                        vaultOriginalUri = vaulted.vaultOriginalUri,
+                        vaultOriginalPath = vaulted.vaultOriginalPath
+                    )
+                }
+            }
+        }
+        val insertResults = insertSongsIgnoreConflicts(mergedSongs)
         val songsToUpdate = mutableListOf<SongEntity>()
         insertResults.forEachIndexed { index, rowId ->
-            if (rowId == -1L) songsToUpdate.add(songs[index])
+            if (rowId == -1L) songsToUpdate.add(mergedSongs[index])
         }
         if (songsToUpdate.isNotEmpty()) {
             updateSongs(songsToUpdate)
@@ -210,13 +255,15 @@ interface MusicDao {
     }
 
     // --- Clear Operations ---
-    @Query("DELETE FROM songs")
+    // Vaulted songs (and the albums/artists they reference) survive library clears and
+    // rebuilds: their private copies still exist, so dropping the rows would orphan them.
+    @Query("DELETE FROM songs WHERE is_vaulted = 0")
     suspend fun clearAllSongs()
 
-    @Query("DELETE FROM albums")
+    @Query("DELETE FROM albums WHERE id NOT IN (SELECT DISTINCT album_id FROM songs WHERE is_vaulted = 1)")
     suspend fun clearAllAlbums()
 
-    @Query("DELETE FROM artists")
+    @Query("DELETE FROM artists WHERE id NOT IN (SELECT DISTINCT artist_id FROM songs WHERE is_vaulted = 1)")
     suspend fun clearAllArtists()
 
     // --- Incremental Sync Operations ---
@@ -357,8 +404,16 @@ interface MusicDao {
         // Protect cloud songs from deletion during generic media scan
         // Only allow explicit deletions if the list is non-empty.
         // During general refresh, deletedSongIds strictly contains local MediaStore IDs only.
-        if (deletedSongIds.isNotEmpty()) {
-            deletedSongIds.chunked(CROSS_REF_BATCH_SIZE).forEach { chunk ->
+        // Vaulted songs are also protected: their private copy is the source of truth even
+        // after the shared-storage original is gone.
+        val deletableSongIds = if (deletedSongIds.isEmpty()) {
+            emptyList()
+        } else {
+            val vaultedIds = getVaultedSongIds().toSet()
+            deletedSongIds.filterNot { it in vaultedIds }
+        }
+        if (deletableSongIds.isNotEmpty()) {
+            deletableSongIds.chunked(CROSS_REF_BATCH_SIZE).forEach { chunk ->
                 deleteCrossRefsBySongIds(chunk)
                 deleteFavoritesBySongIds(chunk)
                 deleteLyricsBySongIds(chunk)
@@ -388,6 +443,40 @@ interface MusicDao {
         deleteOrphanedAlbums()
         deleteOrphanedArtists()
     }
+
+    // --- Song Vault ---
+    @Query("SELECT COUNT(*) FROM songs WHERE id = :songId AND is_vaulted = 1")
+    suspend fun countSongVaulted(songId: Long): Int
+
+    @Query("SELECT id FROM songs WHERE is_vaulted = 1")
+    suspend fun getVaultedSongIds(): List<Long>
+
+    @Query("SELECT * FROM songs WHERE is_vaulted = 1 ORDER BY title ASC")
+    suspend fun getVaultedSongEntities(): List<SongEntity>
+
+    @Query("SELECT id, title, content_uri_string, file_path, parent_directory_path, vault_original_uri, vault_original_path FROM songs WHERE id = :songId LIMIT 1")
+    suspend fun getVaultedSongRow(songId: Long): VaultedSongRow?
+
+    @Query("SELECT id, title, content_uri_string, file_path, parent_directory_path, vault_original_uri, vault_original_path FROM songs WHERE is_vaulted = 1 AND id IN (:songIds)")
+    suspend fun getVaultedSongRows(songIds: List<Long>): List<VaultedSongRow>
+
+    @Query("UPDATE songs SET is_vaulted = 1, content_uri_string = :contentUri, file_path = :filePath, parent_directory_path = :parentDirectoryPath, vault_original_uri = :originalUri, vault_original_path = :originalPath WHERE id = :songId")
+    suspend fun markSongVaulted(
+        songId: Long,
+        contentUri: String,
+        filePath: String,
+        parentDirectoryPath: String,
+        originalUri: String?,
+        originalPath: String?
+    )
+
+    @Query("UPDATE songs SET is_vaulted = 0, content_uri_string = :contentUri, file_path = :filePath, parent_directory_path = :parentDirectoryPath, vault_original_uri = NULL, vault_original_path = NULL WHERE id = :songId")
+    suspend fun clearSongVaultState(
+        songId: Long,
+        contentUri: String,
+        filePath: String,
+        parentDirectoryPath: String
+    )
 
     // --- Directory Helper ---
     @Query("SELECT DISTINCT parent_directory_path FROM songs")
@@ -1758,7 +1847,7 @@ interface MusicDao {
     @Query("SELECT * FROM song_artist_cross_ref")
     suspend fun getAllSongArtistCrossRefsList(): List<SongArtistCrossRef>
 
-    @Query("DELETE FROM song_artist_cross_ref")
+    @Query("DELETE FROM song_artist_cross_ref WHERE song_id NOT IN (SELECT id FROM songs WHERE is_vaulted = 1)")
     suspend fun clearAllSongArtistCrossRefs()
 
     @Query("DELETE FROM song_artist_cross_ref WHERE song_id = :songId")

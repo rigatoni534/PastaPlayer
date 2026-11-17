@@ -5,7 +5,9 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.MediaStore
 import android.provider.Settings
+import androidx.activity.result.IntentSenderRequest
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -56,6 +58,7 @@ import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -151,6 +154,35 @@ fun SongInfoBottomSheet(
     val errorShareSongFormat = stringResource(R.string.song_info_error_share_song)
     var showEditSheet by remember { mutableStateOf(false) }
     var showArtistPicker by remember { mutableStateOf(false) }
+    // Set when a vaulted song's public copy still needs the user's delete consent.
+    var pendingVaultDeleteUri by remember { mutableStateOf<String?>(null) }
+    val vaultDeleteLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        val messageRes = if (result.resultCode == Activity.RESULT_OK) {
+            R.string.song_vault_public_copy_removed
+        } else {
+            R.string.song_vault_public_copy_kept
+        }
+        Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_SHORT).show()
+    }
+    LaunchedEffect(pendingVaultDeleteUri) {
+        val rawUri = pendingVaultDeleteUri ?: return@LaunchedEffect
+        pendingVaultDeleteUri = null
+        runCatching {
+            val intentSender = MediaStore.createDeleteRequest(
+                context.contentResolver,
+                listOf(rawUri.toUri())
+            ).intentSender
+            vaultDeleteLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+        }.onFailure {
+            Toast.makeText(
+                context,
+                context.getString(R.string.song_vault_delete_request_failed),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
     var showTonePickerDialog by remember { mutableStateOf(false) }
     var toneConfirmationTarget by remember { mutableStateOf<ToneTarget?>(null) }
     var pendingTonePermissionSong by remember { mutableStateOf<Song?>(null) }
@@ -357,6 +389,7 @@ fun SongInfoBottomSheet(
     LaunchedEffect(song.id) {
         songInfoViewModel.loadAudioMeta(song)
         songInfoViewModel.loadArtistsForSong(song)
+        songInfoViewModel.refreshVaultState(song.id)
     }
 
     val pagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { 2 })
@@ -530,6 +563,12 @@ fun SongInfoBottomSheet(
                                         Row2Actions(
                                             onAddToQueue = onAddToQueue,
                                             onAddNextToQueue = onAddNextToQueue
+                                        )
+
+                                        SongVaultActionButton(
+                                            song = song,
+                                            songInfoViewModel = songInfoViewModel,
+                                            onPendingDeleteUri = { pendingVaultDeleteUri = it }
                                         )
 
                                         Row3Actions(
@@ -801,6 +840,61 @@ fun SongInfoBottomSheet(
                 toneConfirmationTarget = null
                 setCurrentSongAsTone(target)
             }
+        )
+    }
+}
+
+@Composable
+private fun SongVaultActionButton(
+    song: Song,
+    songInfoViewModel: SongInfoBottomSheetViewModel,
+    onPendingDeleteUri: (String?) -> Unit,
+) {
+    val context = LocalContext.current
+    val isVaultEnabled by songInfoViewModel.isSongVaultEnabled.collectAsStateWithLifecycle()
+    val isVaulted by songInfoViewModel.isSongVaulted.collectAsStateWithLifecycle()
+    val isVaultBusy by songInfoViewModel.isVaultActionRunning.collectAsStateWithLifecycle()
+    val canVault = remember(song.path, song.contentUriString) {
+        songInfoViewModel.isLocalSongForWatchTransfer(song)
+    }
+    if (!isVaultEnabled || !canVault) return
+
+    FilledTonalButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 66.dp),
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        ),
+        contentPadding = PaddingValues(horizontal = 18.dp),
+        shape = CircleShape,
+        enabled = !isVaultBusy,
+        onClick = {
+            if (isVaulted) {
+                songInfoViewModel.removeSongFromVault(song) { outcome ->
+                    Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                songInfoViewModel.moveSongToVault(song) { outcome ->
+                    Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
+                    onPendingDeleteUri(outcome.pendingDeleteUri)
+                }
+            }
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Lock,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = stringResource(
+                if (isVaulted) R.string.song_vault_remove_action else R.string.song_vault_move_action
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

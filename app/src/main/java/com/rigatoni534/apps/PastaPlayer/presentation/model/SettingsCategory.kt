@@ -8,6 +8,7 @@ import androidx.compose.material.icons.rounded.DeveloperMode
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LibraryMusic
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -37,6 +38,12 @@ enum class SettingsCategory(
         titleRes = R.string.settings_category_themes_title,
         subtitleRes = R.string.settings_category_themes_subtitle,
         icon = Icons.Rounded.DarkMode
+    ),
+    SONG_VAULT(
+        id = "song_vault",
+        titleRes = R.string.settings_category_song_vault_title,
+        subtitleRes = R.string.settings_category_song_vault_subtitle,
+        icon = Icons.Rounded.Lock
     ),
     PLAYBACK(
         id = "playback",

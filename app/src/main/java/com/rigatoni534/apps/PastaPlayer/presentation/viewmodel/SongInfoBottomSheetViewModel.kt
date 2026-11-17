@@ -17,6 +17,8 @@ import rigatoni534.apps.PastaPlayer.data.database.MusicDao
 import rigatoni534.apps.PastaPlayer.data.database.toArtist
 import rigatoni534.apps.PastaPlayer.data.model.Artist
 import rigatoni534.apps.PastaPlayer.data.model.Song
+import rigatoni534.apps.PastaPlayer.data.preferences.UserPreferencesRepository
+import rigatoni534.apps.PastaPlayer.data.vault.SongVaultManager
 import rigatoni534.apps.PastaPlayer.data.service.wear.PhoneWatchTransferState
 import rigatoni534.apps.PastaPlayer.data.service.wear.PhoneWatchTransferStateStore
 import rigatoni534.apps.PastaPlayer.data.service.wear.WearPhoneTransferSender
@@ -47,8 +49,15 @@ class SongInfoBottomSheetViewModel @Inject constructor(
     private val wearPhoneTransferSender: WearPhoneTransferSender,
     private val transferStateStore: PhoneWatchTransferStateStore,
     private val musicDao: MusicDao,
+    private val songVaultManager: SongVaultManager,
+    private val userPreferencesRepository: UserPreferencesRepository,
     @ApplicationContext private val appContext: Context,
 ) : ViewModel() {
+
+    data class VaultActionResult(
+        val message: String,
+        val pendingDeleteUri: String? = null,
+    )
 
     data class SongLocationInfo(
         val label: String,
@@ -76,6 +85,16 @@ class SongInfoBottomSheetViewModel @Inject constructor(
     private val _isWatchAvailabilityResolved = MutableStateFlow(false)
     val isWatchAvailabilityResolved: StateFlow<Boolean> = _isWatchAvailabilityResolved.asStateFlow()
     private val _isRefreshingWatchAvailability = MutableStateFlow(false)
+
+    private val _isSongVaulted = MutableStateFlow(false)
+    val isSongVaulted: StateFlow<Boolean> = _isSongVaulted.asStateFlow()
+    private val _isVaultActionRunning = MutableStateFlow(false)
+    val isVaultActionRunning: StateFlow<Boolean> = _isVaultActionRunning.asStateFlow()
+    val isSongVaultEnabled: StateFlow<Boolean> = userPreferencesRepository.songVaultEnabledFlow.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = true,
+    )
 
     private val _isRequestingToWatch = MutableStateFlow(false)
     val watchTransfers: StateFlow<Map<String, PhoneWatchTransferState>> = transferStateStore.transfers
@@ -252,6 +271,87 @@ class SongInfoBottomSheetViewModel @Inject constructor(
 
     fun isSongSavedOnAllReachableWatches(songId: String): Boolean {
         return transferStateStore.isSongSavedOnAllReachableWatches(songId)
+    }
+
+    fun refreshVaultState(songId: String) {
+        viewModelScope.launch {
+            _isSongVaulted.value = songVaultManager.isVaulted(songId)
+        }
+    }
+
+    fun moveSongToVault(song: Song, onResult: (VaultActionResult) -> Unit) {
+        if (_isVaultActionRunning.value) return
+        viewModelScope.launch {
+            if (getCloudProviderLabel(song.contentUriString) != null) {
+                onResult(VaultActionResult(appContext.getString(R.string.song_vault_local_only)))
+                return@launch
+            }
+            _isVaultActionRunning.value = true
+            val result = songVaultManager.vaultSong(song)
+            _isVaultActionRunning.value = false
+            _isSongVaulted.value = songVaultManager.isVaulted(song.id)
+            when (result) {
+                is SongVaultManager.VaultResult.Vaulted -> onResult(
+                    VaultActionResult(
+                        message = appContext.getString(R.string.song_vault_moved_message, song.title),
+                        pendingDeleteUri = result.pendingDeleteUri,
+                    )
+                )
+                is SongVaultManager.VaultResult.Failed -> onResult(
+                    VaultActionResult(appContext.getString(R.string.song_vault_move_failed))
+                )
+                is SongVaultManager.VaultResult.Restored -> onResult(
+                    VaultActionResult(appContext.getString(R.string.song_vault_moved_message, song.title))
+                )
+            }
+        }
+    }
+
+    fun moveSongsToVault(songs: List<Song>, onResult: (VaultActionResult) -> Unit) {
+        if (_isVaultActionRunning.value) return
+        viewModelScope.launch {
+            val localSongs = songs.filter { getCloudProviderLabel(it.contentUriString) == null }
+            if (localSongs.isEmpty()) {
+                onResult(VaultActionResult(appContext.getString(R.string.song_vault_local_only)))
+                return@launch
+            }
+            _isVaultActionRunning.value = true
+            var vaulted = 0
+            for (song in localSongs) {
+                val result = songVaultManager.vaultSong(song)
+                if (result is SongVaultManager.VaultResult.Vaulted) vaulted++
+            }
+            _isVaultActionRunning.value = false
+            onResult(
+                VaultActionResult(
+                    message = if (vaulted > 0) {
+                        appContext.resources.getQuantityString(
+                            R.plurals.song_vault_moved_songs,
+                            vaulted,
+                            vaulted
+                        )
+                    } else {
+                        appContext.getString(R.string.song_vault_move_failed)
+                    }
+                )
+            )
+        }
+    }
+
+    fun removeSongFromVault(song: Song, onResult: (VaultActionResult) -> Unit) {
+        if (_isVaultActionRunning.value) return
+        viewModelScope.launch {
+            _isVaultActionRunning.value = true
+            val result = songVaultManager.restoreSong(song.id)
+            _isVaultActionRunning.value = false
+            _isSongVaulted.value = songVaultManager.isVaulted(song.id)
+            val message = when (result) {
+                is SongVaultManager.VaultResult.Restored ->
+                    appContext.getString(R.string.song_vault_restored_message, song.title)
+                else -> appContext.getString(R.string.song_vault_restore_failed)
+            }
+            onResult(VaultActionResult(message))
+        }
     }
 
     fun isSongEditable(song: Song): Boolean {

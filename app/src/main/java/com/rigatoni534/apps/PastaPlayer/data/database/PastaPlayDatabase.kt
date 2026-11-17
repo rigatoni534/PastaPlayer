@@ -36,7 +36,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         AiCacheEntity::class,
         AiUsageEntity::class
     ],
-    version = 43,
+    version = 44,
     exportSchema = true
 )
 abstract class PastaPlayDatabase : RoomDatabase() {
@@ -1532,6 +1532,15 @@ abstract class PastaPlayDatabase : RoomDatabase() {
         val MIGRATION_42_43 = object : Migration(42, 43) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE playlists ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        /** Song Vault: songs can be moved into app-private storage. */
+        val MIGRATION_43_44 = object : Migration(43, 44) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE songs ADD COLUMN is_vaulted INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE songs ADD COLUMN vault_original_uri TEXT")
+                db.execSQL("ALTER TABLE songs ADD COLUMN vault_original_path TEXT")
             }
         }
 

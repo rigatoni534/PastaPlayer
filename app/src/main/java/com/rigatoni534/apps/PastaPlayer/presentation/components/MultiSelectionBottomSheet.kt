@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.FolderZip
 import androidx.compose.material.icons.rounded.HeartBroken
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.ButtonDefaults
@@ -106,7 +107,8 @@ fun MultiSelectionBottomSheet(
     onToggleLikeAll: (shouldLike: Boolean) -> Unit,
     onShareAll: () -> Unit,
     onDeleteAll: (activity: Activity, onResult: (Boolean) -> Unit) -> Unit,
-    onBatchEdit: () -> Unit
+    onBatchEdit: () -> Unit,
+    onMoveToVault: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -403,6 +405,37 @@ fun MultiSelectionBottomSheet(
                         }
                     }
                     
+                    if (onMoveToVault != null) {
+                        item {
+                            FilledTonalButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 66.dp),
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                ),
+                                contentPadding = PaddingValues(horizontal = 10.dp),
+                                shape = CircleShape,
+                                onClick = {
+                                    onMoveToVault.invoke()
+                                    onDismiss()
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Lock,
+                                    contentDescription = null
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    text = stringResource(R.string.song_vault_move_action),
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+
                     // Row 3: Add to Playlist, Delete
                     item {
                         Row(

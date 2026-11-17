@@ -174,7 +174,10 @@ constructor(
                     // We do this for INCREMENTAL and FULL modes. REBUILD clears everything anyway.
                     if (syncMode != SyncMode.REBUILD) {
                         // Only compare MediaStore-backed songs; cloud sources are excluded.
-                        val localSongIds = musicDao.getAllMediaStoreSongIds().toHashSet()
+                        // Vaulted songs are excluded too: their audio lives in app-private
+                        // storage, so MediaStore no longer lists the file once it is vaulted.
+                        val vaultedSongIds = musicDao.getVaultedSongIds().toHashSet()
+                        val localSongIds = musicDao.getAllMediaStoreSongIds().toHashSet() - vaultedSongIds
                         val mediaStoreIds = fetchMediaStoreIds(directoryResolver)
 
                         // Identify IDs that are in local DB but not in MediaStore
