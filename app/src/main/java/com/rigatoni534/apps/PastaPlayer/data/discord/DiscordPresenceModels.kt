@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 
 /** Minimal Discord gateway / Rich Presence payloads ported from Kizzy (Rigakizzy). */
@@ -74,7 +75,8 @@ fun identifyFrame(token: String): String = buildGatewayFrame(
 )
 
 fun presenceFrame(presence: DiscordPresence): String {
-    val data: JsonObject = discordJson.encodeToJsonElement(DiscordPresence.serializer(), presence)
+    val data: JsonObject =
+        discordJson.encodeToJsonElement(DiscordPresence.serializer(), presence).jsonObject
     return buildGatewayFrame(op = 3, data = data)
 }
 

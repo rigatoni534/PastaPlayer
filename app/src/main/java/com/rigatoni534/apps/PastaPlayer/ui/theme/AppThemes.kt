@@ -6,6 +6,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
+import androidx.core.graphics.ColorUtils
 import rigatoni534.apps.PastaPlayer.data.preferences.AppThemePreset
 import rigatoni534.apps.PastaPlayer.data.preferences.CustomThemeColors
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemePair
@@ -59,7 +60,7 @@ object AppThemes {
 
     private fun seedColorScheme(seedArgb: Int, dark: Boolean): ColorScheme {
         val hsl = FloatArray(3)
-        android.graphics.Color.colorToHSL(seedArgb, hsl)
+        ColorUtils.colorToHSL(seedArgb, hsl)
         val hue = hsl[0]
         val saturation = hsl[1].coerceIn(0.18f, 0.92f)
         val tertiaryHue = hue + 60f
