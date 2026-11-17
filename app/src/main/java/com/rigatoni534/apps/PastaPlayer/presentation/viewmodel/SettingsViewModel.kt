@@ -13,6 +13,9 @@ import rigatoni534.apps.PastaPlayer.data.backup.model.RestorePlan
 import rigatoni534.apps.PastaPlayer.data.backup.model.RestoreResult
 import rigatoni534.apps.PastaPlayer.data.backup.model.ValidationError
 import rigatoni534.apps.PastaPlayer.data.preferences.AppThemeMode
+import rigatoni534.apps.PastaPlayer.data.preferences.AppThemePreset
+import rigatoni534.apps.PastaPlayer.data.preferences.CustomThemeColorRole
+import rigatoni534.apps.PastaPlayer.data.preferences.CustomThemeColors
 import rigatoni534.apps.PastaPlayer.data.preferences.CarouselStyle
 import rigatoni534.apps.PastaPlayer.data.preferences.LibraryNavigationMode
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreference
@@ -56,6 +59,8 @@ data class SettingsUiState(
     val isLoadingDirectories: Boolean = false,
     val appLanguageTag: String = AppLanguage.SYSTEM.tag,
     val appThemeMode: String = AppThemeMode.FOLLOW_SYSTEM,
+    val appThemePreset: AppThemePreset = AppThemePreset.default,
+    val customThemeColors: CustomThemeColors = CustomThemeColors(),
     val playerThemePreference: String = ThemePreference.ALBUM_ART,
     val albumArtPaletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.default,
     val albumArtColorAccuracy: Int = AlbumArtColorAccuracy.DEFAULT,
@@ -139,6 +144,8 @@ private sealed interface SettingsUiUpdate {
     data class Group1(
         val appRebrandDialogShown: Boolean,
         val appThemeMode: String,
+        val appThemePreset: AppThemePreset,
+        val customThemeColors: CustomThemeColors,
         val playerThemePreference: String,
         val albumArtPaletteStyle: AlbumArtPaletteStyle,
         val albumArtColorAccuracy: Int,
@@ -605,10 +612,14 @@ class SettingsViewModel @Inject constructor(
                 userPreferencesRepository.libraryNavigationModeFlow,
                 userPreferencesRepository.carouselStyleFlow,
                 userPreferencesRepository.launchTabFlow,
-                userPreferencesRepository.showPlayerFileInfoFlow
+                userPreferencesRepository.showPlayerFileInfoFlow,
+                themePreferencesRepository.appThemePresetFlow,
+                themePreferencesRepository.customThemeColorsFlow
             ) { values ->
                 SettingsUiUpdate.Group1(
                     appRebrandDialogShown = values[0] as Boolean,
+                    appThemePreset = values[13] as AppThemePreset,
+                    customThemeColors = values[14] as CustomThemeColors,
                     appThemeMode = values[1] as String,
                     playerThemePreference = values[2] as String,
                     albumArtPaletteStyle = values[3] as AlbumArtPaletteStyle,
@@ -627,6 +638,8 @@ class SettingsViewModel @Inject constructor(
                     state.copy(
                         appRebrandDialogShown = update.appRebrandDialogShown,
                         appThemeMode = update.appThemeMode,
+                        appThemePreset = update.appThemePreset,
+                        customThemeColors = update.customThemeColors,
                         playerThemePreference = update.playerThemePreference,
                         albumArtPaletteStyle = update.albumArtPaletteStyle,
                         albumArtColorAccuracy = update.albumArtColorAccuracy,
@@ -907,6 +920,18 @@ class SettingsViewModel @Inject constructor(
     fun setAppThemeMode(mode: String) {
         viewModelScope.launch {
             themePreferencesRepository.setAppThemeMode(mode)
+        }
+    }
+
+    fun setAppThemePreset(preset: AppThemePreset) {
+        viewModelScope.launch {
+            themePreferencesRepository.setAppThemePreset(preset)
+        }
+    }
+
+    fun setCustomThemeColor(role: CustomThemeColorRole, argb: Int) {
+        viewModelScope.launch {
+            themePreferencesRepository.setCustomThemeColor(role, argb)
         }
     }
 

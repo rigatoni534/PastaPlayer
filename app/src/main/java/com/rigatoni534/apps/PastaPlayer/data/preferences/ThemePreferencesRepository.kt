@@ -19,6 +19,8 @@ class ThemePreferencesRepository @Inject constructor(
         val ALBUM_ART_PALETTE_STYLE = stringPreferencesKey("album_art_palette_style_v1")
         val ALBUM_ART_COLOR_ACCURACY = intPreferencesKey("album_art_color_accuracy_v1")
         val APP_THEME_MODE = stringPreferencesKey("app_theme_mode")
+        val APP_THEME_PRESET = stringPreferencesKey("app_theme_preset_v1")
+        val CUSTOM_THEME_COLORS = stringPreferencesKey("custom_theme_colors_v1")
     }
 
     val appThemeModeFlow: Flow<String> = dataStore.data.map { preferences ->
@@ -27,6 +29,14 @@ class ThemePreferencesRepository @Inject constructor(
 
     val playerThemePreferenceFlow: Flow<String> = dataStore.data.map { preferences ->
         preferences[Keys.PLAYER_THEME_PREFERENCE] ?: ThemePreference.ALBUM_ART
+    }
+
+    val appThemePresetFlow: Flow<AppThemePreset> = dataStore.data.map { preferences ->
+        AppThemePreset.fromStorageKey(preferences[Keys.APP_THEME_PRESET])
+    }
+
+    val customThemeColorsFlow: Flow<CustomThemeColors> = dataStore.data.map { preferences ->
+        CustomThemeColors.fromJson(preferences[Keys.CUSTOM_THEME_COLORS])
     }
 
     val albumArtPaletteStyleFlow: Flow<AlbumArtPaletteStyle> = dataStore.data.map { preferences ->
@@ -52,6 +62,17 @@ class ThemePreferencesRepository @Inject constructor(
             if (preferences[Keys.APP_THEME_MODE] == null) {
                 preferences[Keys.APP_THEME_MODE] = themeMode
             }
+        }
+
+    suspend fun setAppThemePreset(preset: AppThemePreset) =
+        dataStore.edit { preferences ->
+            preferences[Keys.APP_THEME_PRESET] = preset.storageKey
+        }
+
+    suspend fun setCustomThemeColor(role: CustomThemeColorRole, argb: Int) =
+        dataStore.edit { preferences ->
+            val current = CustomThemeColors.fromJson(preferences[Keys.CUSTOM_THEME_COLORS])
+            preferences[Keys.CUSTOM_THEME_COLORS] = current.withColor(role, argb).toJson()
         }
 
     suspend fun setAlbumArtPaletteStyle(style: AlbumArtPaletteStyle) =

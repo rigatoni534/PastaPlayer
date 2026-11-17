@@ -536,6 +536,16 @@ fun SettingsCategoryScreen(
                                 )
                             }
                         }
+                        SettingsCategory.THEMES -> {
+                            ThemesSettingsSection(
+                                appThemeMode = uiState.appThemeMode,
+                                onThemeModeSelected = settingsViewModel::setAppThemeMode,
+                                selectedPreset = uiState.appThemePreset,
+                                onPresetSelected = settingsViewModel::setAppThemePreset,
+                                customColors = uiState.customThemeColors,
+                                onCustomColorChanged = settingsViewModel::setCustomThemeColor
+                            )
+                        }
                         SettingsCategory.APPEARANCE -> {
                             val useSmoothCorners by settingsViewModel.useSmoothCorners.collectAsStateWithLifecycle()
 

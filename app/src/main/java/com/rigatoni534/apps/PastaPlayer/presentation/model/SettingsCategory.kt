@@ -2,6 +2,7 @@ package rigatoni534.apps.PastaPlayer.presentation.model
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.DeveloperBoard
 import androidx.compose.material.icons.rounded.DeveloperMode
 import androidx.compose.material.icons.rounded.GraphicEq
@@ -30,6 +31,12 @@ enum class SettingsCategory(
         titleRes = R.string.settings_category_appearance_title,
         subtitleRes = R.string.settings_category_appearance_subtitle,
         icon = Icons.Rounded.Palette
+    ),
+    THEMES(
+        id = "themes",
+        titleRes = R.string.settings_category_themes_title,
+        subtitleRes = R.string.settings_category_themes_subtitle,
+        icon = Icons.Rounded.DarkMode
     ),
     PLAYBACK(
         id = "playback",

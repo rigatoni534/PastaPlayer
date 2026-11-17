@@ -107,6 +107,8 @@ import com.google.common.util.concurrent.MoreExecutors
 import rigatoni534.apps.PastaPlayer.data.github.GitHubAnnouncementPropertiesService
 import rigatoni534.apps.PastaPlayer.data.github.PlayStoreAnnouncementRemoteConfig
 import rigatoni534.apps.PastaPlayer.data.preferences.AppThemeMode
+import rigatoni534.apps.PastaPlayer.data.preferences.AppThemePreset
+import rigatoni534.apps.PastaPlayer.data.preferences.CustomThemeColors
 import rigatoni534.apps.PastaPlayer.data.preferences.NavBarStyle
 import rigatoni534.apps.PastaPlayer.data.preferences.sanitizeNavBarCornerRadius
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreferencesRepository
@@ -135,6 +137,7 @@ import rigatoni534.apps.PastaPlayer.presentation.navigation.Screen
 import rigatoni534.apps.PastaPlayer.presentation.screens.SetupScreen
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.MainViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
+import rigatoni534.apps.PastaPlayer.ui.theme.AppThemes
 import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayTheme
 import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
 import rigatoni534.apps.PastaPlayer.utils.CrashHandler
@@ -242,11 +245,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             val systemDarkTheme = isSystemInDarkTheme()
             val appThemeMode by themePreferencesRepository.appThemeModeFlow.collectAsStateWithLifecycle(initialValue = AppThemeMode.FOLLOW_SYSTEM)
+            val appThemePreset by themePreferencesRepository.appThemePresetFlow.collectAsStateWithLifecycle(initialValue = AppThemePreset.default)
+            val customThemeColors by themePreferencesRepository.customThemeColorsFlow.collectAsStateWithLifecycle(initialValue = CustomThemeColors())
             val showScrollbar by userPreferencesRepository.showScrollbarFlow.collectAsStateWithLifecycle(initialValue = true)
             val useDarkTheme = when (appThemeMode) {
                 AppThemeMode.DARK -> true
                 AppThemeMode.LIGHT -> false
                 else -> systemDarkTheme
+            }
+            // Theme chosen in Settings > Themes. Null keeps platform dynamic colors.
+            val appColorSchemePair = remember(appThemePreset, customThemeColors) {
+                AppThemes.colorSchemePairFor(appThemePreset, customThemeColors)
             }
             val isSetupComplete by mainViewModel.isSetupComplete.collectAsStateWithLifecycle()
             
@@ -290,7 +299,8 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(LocalShowScrollbar provides showScrollbar) {
                 PastaPlayTheme(
-                    darkTheme = useDarkTheme
+                    darkTheme = useDarkTheme,
+                    colorSchemePairOverride = appColorSchemePair
                 ) {
                     var contentVisible by remember { mutableStateOf(false) }
                     val contentAlpha by animateFloatAsState(

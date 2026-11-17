@@ -160,6 +160,39 @@
 
     <!-- Appearance category -->
     <string name="settings_global_theme_section">Global Theme</string>
+
+    <!-- Themes category -->
+    <string name="settings_category_themes_title">Themes</string>
+    <string name="settings_category_themes_subtitle">Material You palettes and custom colors</string>
+    <string name="settings_themes_default_section">Default Material You</string>
+    <string name="settings_themes_dynamic_title">Material You (dynamic)</string>
+    <string name="settings_themes_dynamic_subtitle">Follows your wallpaper colors on Android 12 and newer, with the default palette as a fallback.</string>
+    <string name="settings_themes_presets_section">Material You palettes</string>
+    <string name="settings_themes_presets_subtitle">Ready-made schemes inspired by common Material You palettes.</string>
+    <string name="settings_themes_custom_section">Custom theme</string>
+    <string name="settings_themes_custom_subtitle">Pick each color yourself. Containers, on-colors and dark variants are generated from your choices.</string>
+    <string name="settings_themes_custom_enable">Use custom colors</string>
+    <string name="settings_themes_custom_enable_subtitle">Apply your own palette across the app.</string>
+    <string name="settings_themes_selected">Selected</string>
+    <string name="settings_themes_edit_color">Edit %1$s</string>
+    <string name="settings_themes_hex_label">Hex</string>
+    <string name="settings_themes_color_dialog_title">Pick a color</string>
+    <string name="settings_theme_preset_dynamic">Material You</string>
+    <string name="settings_theme_preset_lavender">Lavender</string>
+    <string name="settings_theme_preset_ocean">Ocean</string>
+    <string name="settings_theme_preset_forest">Forest</string>
+    <string name="settings_theme_preset_sunset">Sunset</string>
+    <string name="settings_theme_preset_rose">Rose</string>
+    <string name="settings_theme_preset_slate">Slate</string>
+    <string name="settings_theme_preset_custom">Custom</string>
+    <string name="settings_theme_role_primary">Primary</string>
+    <string name="settings_theme_role_secondary">Secondary</string>
+    <string name="settings_theme_role_tertiary">Tertiary</string>
+    <string name="settings_theme_role_background">Background</string>
+    <string name="settings_theme_role_surface">Surface</string>
+    <string name="settings_theme_role_surface_variant">Surface variant</string>
+    <string name="settings_theme_role_error">Error</string>
+    <string name="settings_theme_role_outline">Outline</string>
     <string name="settings_app_language_title">App Language</string>
     <string name="settings_app_language_subtitle">Choose the language used across the app interface.</string>
     <string name="settings_language_system">System default</string>
