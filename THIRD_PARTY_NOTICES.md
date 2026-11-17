@@ -4,7 +4,7 @@ Portions of this software were originally contributed under the MIT License prio
 
 ## MIT License
 
-Copyright (c) 2024-2026 Theo Vilardo and PixelPlayer contributors
+Copyright (c) 2024-2026 Theo Vilardo and PastaPlayer contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.theveloper.pixelplay"
+    namespace = "rigatoni534.apps.PastaPlayer"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.theveloper.pixelplay"
+        applicationId = "rigatoni534.apps.PastaPlayer"
         minSdk = 30
         targetSdk = 37
         versionCode = (project.findProperty("APP_VERSION_CODE") as? String)?.toInt() ?: 1

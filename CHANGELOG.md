@@ -40,11 +40,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Other:** Fixed backup playlist update issues and startup AI provider errors.
 
 ### New Contributors
-- @YtMechnij made their first contribution in https://github.com/theovilardo/PixelPlayer/pull/2106
-- @juinc made their first contribution in https://github.com/theovilardo/PixelPlayer/pull/2109
-- @ZL114514 made their first contribution in https://github.com/theovilardo/PixelPlayer/pull/2159
-- @aliabbasov99 made their first contribution in https://github.com/theovilardo/PixelPlayer/pull/2262
-- @Hisham-Alzamzami made their first contribution in https://github.com/theovilardo/PixelPlayer/pull/2335
+- @YtMechnij made their first contribution in https://github.com/rigatoni534/PastaPlayer/pull/2106
+- @juinc made their first contribution in https://github.com/rigatoni534/PastaPlayer/pull/2109
+- @ZL114514 made their first contribution in https://github.com/rigatoni534/PastaPlayer/pull/2159
+- @aliabbasov99 made their first contribution in https://github.com/rigatoni534/PastaPlayer/pull/2262
+- @Hisham-Alzamzami made their first contribution in https://github.com/rigatoni534/PastaPlayer/pull/2335
 
 
 ## [0.7.0-beta] - 2026-05-25
@@ -212,7 +212,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0-beta] - 2024-08-30
 
 ### Added
-- Initial beta release of PixelPlayer Music Player.
+- Initial beta release of PastaPlayer Music Player.
 - Local music scanning and playback (MP3, FLAC, AAC).
 - Background playback using a foreground service and Media3.
 - Modern UI with Jetpack Compose, Material 3, and Dynamic Color support.

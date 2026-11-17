@@ -54,11 +54,11 @@ val localProperties = Properties().apply {
     }
 }
 
-val enableAbiSplits = providers.gradleProperty("pixelplay.enableAbiSplits")
+val enableAbiSplits = providers.gradleProperty("pastaplay.enableAbiSplits")
     .getOrElse("true")
     .toBoolean()
 
-val enableComposeCompilerReports = providers.gradleProperty("pixelplay.enableComposeCompilerReports")
+val enableComposeCompilerReports = providers.gradleProperty("pastaplay.enableComposeCompilerReports")
     .getOrElse("false")
     .toBoolean()
 
@@ -70,7 +70,7 @@ val copyThirdPartyNotices = tasks.register<CopyThirdPartyNotices>("copyThirdPart
 
 @Suppress("DEPRECATION")
 android {
-    namespace = "com.theveloper.pixelplay"
+    namespace = "rigatoni534.apps.PastaPlayer"
     compileSdk = 37
 
     sourceSets {
@@ -101,7 +101,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.theveloper.pixelplay"
+        applicationId = "rigatoni534.apps.PastaPlayer"
         minSdk = 30
         targetSdk = 37
         versionCode = (project.findProperty("APP_VERSION_CODE") as? String)?.toInt() ?: 1
@@ -119,7 +119,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("$rootDir/vz-pixelplay.jks")
+            storeFile = file("$rootDir/vz-pastaplay.jks")
             storePassword = keystoreProperties.getProperty("storePassword") ?: "dummyPassword"
             keyAlias = keystoreProperties.getProperty("keyAlias") ?: "dummyAlias"
             keyPassword = keystoreProperties.getProperty("keyPassword") ?: "dummyPassword"
@@ -132,7 +132,7 @@ android {
         }
 
         release {
-            val keystoreFile = file("$rootDir/vz-pixelplay.jks")
+            val keystoreFile = file("$rootDir/vz-pastaplay.jks")
             signingConfig = if (keystoreFile.exists()) {
                 signingConfigs.getByName("release")
             } else {

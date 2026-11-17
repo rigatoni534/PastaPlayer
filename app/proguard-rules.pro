@@ -58,27 +58,27 @@
 -dontwarn com.softsynth.**
 
 # Mantener clases de datos y sus miembros para evitar que R8 Full elimine campos
--keepclassmembers class com.theveloper.pixelplay.data.model.** { *; }
--keepclassmembers class com.theveloper.pixelplay.domain.model.** { *; }
+-keepclassmembers class rigatoni534.apps.PastaPlayer.data.model.** { *; }
+-keepclassmembers class rigatoni534.apps.PastaPlayer.domain.model.** { *; }
 
 -keepattributes Signature, InnerClasses, EnclosingMethod, AnnotationDefault, *Annotation*
 
 # Cast framework classes loaded via manifest/reflective entry points.
--keep class com.theveloper.pixelplay.data.service.cast.CastOptionsProvider { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.service.cast.CastOptionsProvider { *; }
 -keep class * implements com.google.android.gms.cast.framework.OptionsProvider
 
 # Gson generic type capture for backup/restore in release builds.
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken
--keep class com.theveloper.pixelplay.data.preferences.PreferenceBackupEntry { *; }
--keep class com.theveloper.pixelplay.data.backup.model.** { *; }
--keep class com.theveloper.pixelplay.data.backup.module.** { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.preferences.PreferenceBackupEntry { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.backup.model.** { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.backup.module.** { *; }
 # Backup payload entities are part of the persisted .pxpl contract.
--keep class com.theveloper.pixelplay.data.database.FavoritesEntity { *; }
--keep class com.theveloper.pixelplay.data.database.SongEngagementEntity { *; }
--keep class com.theveloper.pixelplay.data.database.LyricsEntity { *; }
--keep class com.theveloper.pixelplay.data.database.SearchHistoryEntity { *; }
--keep class com.theveloper.pixelplay.data.database.TransitionRuleEntity { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.database.FavoritesEntity { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.database.SongEngagementEntity { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.database.LyricsEntity { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.database.SearchHistoryEntity { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.database.TransitionRuleEntity { *; }
 
 # Netty channel classes are instantiated reflectively and require public no-arg constructors.
 # Without these, release builds can fail with:
@@ -169,7 +169,7 @@
 -dontwarn io.netty.**
 
 # Ensure internal server can start
--keep class com.theveloper.pixelplay.data.telegram.TelegramStreamProxy { *; }
+-keep class rigatoni534.apps.PastaPlayer.data.telegram.TelegramStreamProxy { *; }
 
 # Keep Kotlin reflection if needed by Ktor/Serialization in Release
 -keep class kotlin.reflect.** { *; }

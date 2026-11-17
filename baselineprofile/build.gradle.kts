@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.theveloper.pixelplay.baselineprofile"
+    namespace = "rigatoni534.apps.PastaPlayer.baselineprofile"
     compileSdk = 37
 
     compileOptions {

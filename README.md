@@ -1,15 +1,18 @@
-# PixelPlayer 🎵
+# PastaPlayer 🎵
 
 <p align="center">
-  <img src="assets/PixelPlayer.svg" alt="App Icon" height="250"/>
-</p>
-<p align="center">
-<a href="https://trendshift.io/repositories/15551" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15551" alt="PixelPlayerHQ%2FPixelPlayer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+  <img src="assets/PastaPlayer.svg" alt="App Icon" height="250"/>
 </p>
 <p align="center">
   <strong>A beautiful, feature-rich music player for Android</strong><br>
   Built with Jetpack Compose and Material Design 3
 </p>
+
+> ### 🍝 PastaPlayer is a fork of PixelPlayer
+>
+> PastaPlayer is a fork of [PixelPlayer](https://github.com/theovilardo/PixelPlayer), the open source Android music player created by [Theo Vilardo](https://github.com/theovilardo).
+> All credit for the original app goes to Theo and the PixelPlayer contributors. This fork is maintained by [rigatoni534](https://github.com/rigatoni534)
+> and is not supported by the upstream project.
 
 <p align="center">
   <img src="assets/screenshot1.jpg" alt="Screenshot 1" width="200" style="border-radius:26px;"/>
@@ -19,11 +22,11 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/theovilardo/PixelPlayer/releases/latest">
-        <img src="https://img.shields.io/github/v/release/theovilardo/PixelPlayer?include_prereleases&logo=github&style=for-the-badge&label=Latest%20Release" alt="Latest Release">
+    <a href="https://github.com/rigatoni534/PastaPlayer/releases/latest">
+        <img src="https://img.shields.io/github/v/release/rigatoni534/PastaPlayer?include_prereleases&logo=github&style=for-the-badge&label=Latest%20Release" alt="Latest Release">
     </a>
-    <a href="https://github.com/theovilardo/PixelPlayer/releases">
-        <img src="https://img.shields.io/github/downloads/theovilardo/PixelPlayer/total?logo=github&style=for-the-badge" alt="Total Downloads">
+    <a href="https://github.com/rigatoni534/PastaPlayer/releases">
+        <img src="https://img.shields.io/github/downloads/rigatoni534/PastaPlayer/total?logo=github&style=for-the-badge" alt="Total Downloads">
     </a>
     <img src="https://img.shields.io/badge/Android-11%2B-green?style=for-the-badge&logo=android" alt="Android 11+">
     <img src="https://img.shields.io/badge/Kotlin-100%25-purple?style=for-the-badge&logo=kotlin" alt="Kotlin">
@@ -126,7 +129,7 @@
 
 1. **Clone the repository**
    ```sh
-   git clone https://github.com/theovilardo/PixelPlayer.git
+   git clone https://github.com/rigatoni534/PastaPlayer.git
    ```
 
 2. **Open in Android Studio**
@@ -147,13 +150,13 @@
 ## ⬇️ Download
 
 <p align="center">
-  <a href="https://github.com/theovilardo/PixelPlayer/releases/latest">
+  <a href="https://github.com/rigatoni534/PastaPlayer/releases/latest">
     <img src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" alt="Get it on GitHub" height="60">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.theveloper.pixelplay%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2Ftheovilardo%2FPixelPlayer%22%2C%22author%22%3A%22theovilardo%22%2C%22name%22%3A%22PixelPlayer%22%2C%22supportFixedAPKURL%22%3Afalse%7D">
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22rigatoni534.apps.PastaPlayer%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2Frigatoni534%2FPastaPlayer%22%2C%22author%22%3A%22theovilardo%22%2C%22name%22%3A%22PastaPlayer%22%2C%22supportFixedAPKURL%22%3Afalse%7D">
     <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="50">
   </a>
 </p>
@@ -163,7 +166,7 @@
 ## 📂 Project Structure
 
 ```
-app/src/main/java/com/theveloper/pixelplay/
+app/src/main/java/rigatoni534/apps/PastaPlayer/
 ├── data/
 │   ├── database/       # Room entities, DAOs, migrations
 │   ├── model/          # Domain models (Song, Album, Artist, etc.)
@@ -200,14 +203,17 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under a Proprietary License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under a Proprietary License - see the [LICENSE](LICENSE) file for details. PastaPlayer inherits this license from the upstream [PixelPlayer](https://github.com/theovilardo/PixelPlayer) project.
 
 Portions contributed before 2026-05-12 remain available under the MIT License; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/theovilardo">theovilardo</a>
+  PastaPlayer is forked from <a href="https://github.com/theovilardo/PixelPlayer">PixelPlayer</a>, made with ❤️ by <a href="https://github.com/theovilardo">theovilardo</a>.
+</p>
+<p align="center">
+  Fork maintained by <a href="https://github.com/rigatoni534">rigatoni534</a>.
 </p>
 <p align="center">
   Logo designed by <a href="https://github.com/NPSummers">Aureal</a>.

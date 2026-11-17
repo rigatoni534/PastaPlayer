@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.theveloper.pixelplay.shared"
+    namespace = "rigatoni534.apps.PastaPlayer.shared"
     compileSdk = 37
 
     defaultConfig {
