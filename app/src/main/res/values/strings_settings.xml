@@ -726,4 +726,67 @@
     <string name="song_vault_experimental_confirm">Move anyway</string>
     <string name="song_vault_experimental_settings_body">Experimental: not guaranteed to work. Vaulted songs may fail to play or restore, and the originals are removed from shared storage. Back up your music first.</string>
     <string name="song_removal_vaulted_protected">Vaulted songs can\'t be deleted from the device. Remove them from the vault first.</string>
+
+    <!-- Rigakizzy (Discord Rich Presence) -->
+    <string name="settings_category_rigakizzy_title">Rigakizzy</string>
+    <string name="settings_category_rigakizzy_subtitle">Show what you\'re listening to on Discord</string>
+    <string name="rigakizzy_warning_title">Use at your own risk</string>
+    <string name="rigakizzy_warning_body">Rigakizzy signs in with your own Discord account to publish PastaPlayer as your activity. This is the same approach Kizzy uses and no bans have been reported, but automating a user account can break Discord\'s Terms of Service and could get that account banned. Your token never leaves this device.</string>
+    <string name="rigakizzy_account_title">Discord account</string>
+    <string name="rigakizzy_login_subtitle">Log in to let Rigakizzy publish your activity</string>
+    <string name="rigakizzy_login_connected_subtitle">Logged in. Your activity updates automatically when music plays.</string>
+    <string name="rigakizzy_logged_in_as">Logged in as %1$s</string>
+    <string name="rigakizzy_login_button">Log in with Discord</string>
+    <string name="rigakizzy_logout_button">Log out</string>
+    <string name="rigakizzy_login_validating">Checking your Discord login…</string>
+    <string name="rigakizzy_login_failed">Discord rejected that login. Try again.</string>
+    <string name="rigakizzy_login_dialog_title">Log in to Discord</string>
+    <string name="rigakizzy_login_dialog_body">Sign in below. PastaPlayer only reads the session from this window and keeps it on this device.</string>
+    <string name="rigakizzy_login_dialog_waiting">Waiting for you to finish logging in…</string>
+    <string name="rigakizzy_close">Close</string>
+    <string name="rigakizzy_enable_title">Enable Rigakizzy</string>
+    <string name="rigakizzy_enable_subtitle">Automatically show the current song on your Discord profile</string>
+    <string name="rigakizzy_enable_requires_login">Log in to Discord first</string>
+    <string name="rigakizzy_status_disabled">Status: off</string>
+    <string name="rigakizzy_status_not_logged_in">Status: not logged in</string>
+    <string name="rigakizzy_status_stopped">Status: stopped for this session</string>
+    <string name="rigakizzy_status_idle">Status: waiting for music</string>
+    <string name="rigakizzy_status_connecting">Status: connecting to Discord…</string>
+    <string name="rigakizzy_status_connected">Status: connected</string>
+    <string name="rigakizzy_preset_title">Presence format</string>
+    <string name="rigakizzy_preset_subtitle">Choose how the song is arranged in your Discord activity</string>
+    <string name="rigakizzy_preset_player_title">PastaPlayer · song · artist</string>
+    <string name="rigakizzy_preset_artist_title">Artist · song · PastaPlayer</string>
+    <string name="rigakizzy_preset_song_title">Song · artist · PastaPlayer</string>
+    <string name="rigakizzy_preset_custom">Custom</string>
+    <string name="rigakizzy_custom_title">Custom format</string>
+    <string name="rigakizzy_custom_subtitle">Placeholders: {song}, {artist}, {album}, {player}</string>
+    <string name="rigakizzy_custom_name">Title line</string>
+    <string name="rigakizzy_custom_details">Activity line</string>
+    <string name="rigakizzy_custom_state">Description line</string>
+    <string name="rigakizzy_application_id_title">Application ID</string>
+    <string name="rigakizzy_application_id_subtitle">Discord application used for the activity. Keep the default unless you use your own app.</string>
+    <string name="rigakizzy_reset_default">Reset to default</string>
+    <string name="rigakizzy_stop_title">Stop for session</string>
+    <string name="rigakizzy_stop_subtitle">Hides the activity until you resume it or restart PastaPlayer</string>
+    <string name="rigakizzy_stop_button">Stop</string>
+    <string name="rigakizzy_resume_button">Resume</string>
+    <string name="rigakizzy_image_note">Song artwork (or album/artist art) is shown when Discord accepts it, otherwise Discord shows your application\'s icon.</string>
+    <string name="rigakizzy_assets_title">Image asset keys</string>
+    <string name="rigakizzy_assets_subtitle">Asset names uploaded to your Discord application for the playing and paused icons.</string>
+    <string name="rigakizzy_playing_key">Playing asset key</string>
+    <string name="rigakizzy_paused_key">Paused asset key</string>
+
+    <!-- Setup: Rigakizzy and Song Vault -->
+    <string name="rigakizzy_setup_title">Rigakizzy</string>
+    <string name="rigakizzy_setup_subtitle">Optional: show what you\'re listening to on Discord</string>
+    <string name="rigakizzy_setup_body">Rigakizzy connects PastaPlayer to your Discord profile. When music starts, your activity shows the song, artist and a progress bar. Pausing switches it to a pause state, and you can stop it any time in Settings → Rigakizzy.</string>
+    <string name="rigakizzy_setup_ack">I understand Rigakizzy uses my Discord account and could get it banned</string>
+    <string name="rigakizzy_setup_login">Log in with Discord</string>
+    <string name="rigakizzy_setup_connected">Discord connected. Your activity will start with your next song.</string>
+    <string name="rigakizzy_setup_later">You can change the format, application ID and images later in Settings → Rigakizzy.</string>
+    <string name="vault_setup_title">Song Vault</string>
+    <string name="vault_setup_subtitle">Optional: keep songs out of shared storage</string>
+    <string name="vault_setup_body">Song Vault moves songs into PastaPlayer\'s private storage so they no longer sit in your music folders. You can vault and restore songs from the library at any time.</string>
+    <string name="setup_extras_themes_note">Themes, colors and layout can be changed later in Settings → Themes and Settings → Appearance.</string>
 </resources>

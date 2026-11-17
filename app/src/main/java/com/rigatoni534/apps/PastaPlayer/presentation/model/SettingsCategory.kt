@@ -45,6 +45,12 @@ enum class SettingsCategory(
         subtitleRes = R.string.settings_category_song_vault_subtitle,
         icon = Icons.Rounded.Lock
     ),
+    RIGAKIZZY(
+        id = "rigakizzy",
+        titleRes = R.string.settings_category_rigakizzy_title,
+        subtitleRes = R.string.settings_category_rigakizzy_subtitle,
+        icon = Icons.Rounded.MusicNote
+    ),
     PLAYBACK(
         id = "playback",
         titleRes = R.string.settings_category_playback_title,

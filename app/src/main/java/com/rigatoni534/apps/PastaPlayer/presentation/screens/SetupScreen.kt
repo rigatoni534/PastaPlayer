@@ -384,6 +384,8 @@ fun SetupScreen(
                         uiState = uiState,
                         onModeSelected = setupViewModel::setAppThemeMode
                     )
+                    SetupPage.Rigakizzy -> RigakizzySetupPage()
+                    SetupPage.Vault -> VaultSetupPage()
                     SetupPage.Finish -> FinishPage()
                     SetupPage.LibraryLayout -> LibraryLayoutPage(
                         uiState = uiState,
@@ -547,6 +549,8 @@ sealed class SetupPage {
     object LibraryLayout : SetupPage()
     object NavBarLayout : SetupPage()
     object BatteryOptimization : SetupPage()
+    object Rigakizzy : SetupPage()
+    object Vault : SetupPage()
     object Finish : SetupPage()
 }
 
@@ -571,6 +575,8 @@ private fun buildSetupPages(sdkInt: Int): List<SetupPage> {
     }
 
     pages += SetupPage.BatteryOptimization
+    pages += SetupPage.Rigakizzy
+    pages += SetupPage.Vault
     pages += SetupPage.Finish
     return pages
 }

@@ -549,6 +549,9 @@ fun SettingsCategoryScreen(
                         SettingsCategory.SONG_VAULT -> {
                             SongVaultSettingsSection()
                         }
+                        SettingsCategory.RIGAKIZZY -> {
+                            RigakizzySettingsSection()
+                        }
                         SettingsCategory.APPEARANCE -> {
                             val useSmoothCorners by settingsViewModel.useSmoothCorners.collectAsStateWithLifecycle()
 

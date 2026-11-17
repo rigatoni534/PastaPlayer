@@ -188,6 +188,8 @@ class MainActivity : ComponentActivity() {
     lateinit var themePreferencesRepository: ThemePreferencesRepository
     @Inject
     lateinit var syncManager: SyncManager
+    @Inject
+    lateinit var rigakizzyController: rigatoni534.apps.PastaPlayer.data.discord.RigakizzyController
     // For handling shortcut navigation - using StateFlow so composables can observe changes
     private val _pendingPlaylistNavigation = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
     private val _pendingShuffleAll = kotlinx.coroutines.flow.MutableStateFlow(false)
@@ -536,6 +538,20 @@ class MainActivity : ComponentActivity() {
         
         // isMediaControllerReady used below for playlist navigation gate
         val isMediaControllerReady by playerViewModel.isMediaControllerReady.collectAsStateWithLifecycle()
+
+        // Rigakizzy: mirror playback into Discord Rich Presence (no-op when disabled).
+        // Collects for the lifetime of the composition so song changes still update Discord
+        // while the activity is in the background.
+        LaunchedEffect(playerViewModel) {
+            playerViewModel.stablePlayerState.collect { state ->
+                rigakizzyController.updateSong(
+                    song = state.currentSong,
+                    isPlaying = state.isPlaying,
+                    positionMs = playerViewModel.currentPlaybackPosition.value,
+                    durationMs = state.totalDuration
+                )
+            }
+        }
         
         // Observe pending playlist navigation
         val pendingPlaylistNav by _pendingPlaylistNavigation.collectAsStateWithLifecycle()
