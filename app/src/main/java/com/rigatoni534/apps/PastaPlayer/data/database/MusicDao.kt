@@ -273,7 +273,9 @@ interface MusicDao {
     @Query("SELECT id FROM songs WHERE source_type = 0")
     suspend fun getAllMediaStoreSongIds(): List<Long>
 
-    @Query("DELETE FROM songs WHERE id IN (:songIds)")
+    // Safety net: vaulted songs are never deleted. Their audio lives in app-private
+    // storage, so dropping the row would orphan the file and lose the library entry.
+    @Query("DELETE FROM songs WHERE id IN (:songIds) AND is_vaulted = 0")
     suspend fun deleteSongsByIds(songIds: List<Long>)
 
     @Query("DELETE FROM song_artist_cross_ref WHERE song_id IN (:songIds)")
@@ -1824,7 +1826,8 @@ interface MusicDao {
     @Query("SELECT album_art_uri_string FROM songs WHERE id=:id")
     suspend fun getAlbumArtUriById(id: Long) : String?
 
-    @Query("DELETE FROM songs WHERE id=:id")
+    /** Vaulted songs are protected and deliberately excluded from this delete. */
+    @Query("DELETE FROM songs WHERE id=:id AND is_vaulted = 0")
     suspend fun deleteById(id: Long)
 
     @Query("""

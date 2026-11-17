@@ -857,7 +857,27 @@ private fun SongVaultActionButton(
     val canVault = remember(song.path, song.contentUriString) {
         songInfoViewModel.isLocalSongForWatchTransfer(song)
     }
+    val isNoticeAcknowledged by songInfoViewModel.vaultExperimentalNoticeAcknowledged
+        .collectAsStateWithLifecycle()
+    var showExperimentalWarning by remember { mutableStateOf(false) }
+    val startVaultMove: () -> Unit = {
+        songInfoViewModel.moveSongToVault(song) { outcome ->
+            Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
+            onPendingDeleteUri(outcome.pendingDeleteUri)
+        }
+    }
     if (!isVaultEnabled || !canVault) return
+
+    if (showExperimentalWarning) {
+        SongVaultExperimentalDialog(
+            onConfirm = {
+                showExperimentalWarning = false
+                songInfoViewModel.acknowledgeVaultExperimentalNotice()
+                startVaultMove()
+            },
+            onDismiss = { showExperimentalWarning = false }
+        )
+    }
 
     FilledTonalButton(
         modifier = Modifier
@@ -875,11 +895,10 @@ private fun SongVaultActionButton(
                 songInfoViewModel.removeSongFromVault(song) { outcome ->
                     Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
                 }
+            } else if (isNoticeAcknowledged) {
+                startVaultMove()
             } else {
-                songInfoViewModel.moveSongToVault(song) { outcome ->
-                    Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
-                    onPendingDeleteUri(outcome.pendingDeleteUri)
-                }
+                showExperimentalWarning = true
             }
         }
     ) {

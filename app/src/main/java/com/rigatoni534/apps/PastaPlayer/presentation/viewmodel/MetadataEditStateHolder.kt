@@ -14,6 +14,7 @@ import rigatoni534.apps.PastaPlayer.data.media.MetadataEditError
 import rigatoni534.apps.PastaPlayer.data.media.SongMetadataEditor
 import rigatoni534.apps.PastaPlayer.data.model.Lyrics
 import rigatoni534.apps.PastaPlayer.data.model.Song
+import rigatoni534.apps.PastaPlayer.data.vault.SongVaultManager
 import rigatoni534.apps.PastaPlayer.data.repository.MusicRepository
 import rigatoni534.apps.PastaPlayer.utils.FileDeletionUtils
 import rigatoni534.apps.PastaPlayer.utils.LyricsUtils
@@ -281,6 +282,8 @@ class MetadataEditStateHolder @Inject constructor(
     }
 
     suspend fun deleteSong(song: Song): Boolean = withContext(Dispatchers.IO) {
+        // Song Vault safety: never delete audio that lives in the app-private vault.
+        if (SongVaultManager.isVaultStoragePath(song.path)) return@withContext false
         val fileInfo = FileDeletionUtils.getFileInfo(song.path)
         if (!fileInfo.exists) {
             true

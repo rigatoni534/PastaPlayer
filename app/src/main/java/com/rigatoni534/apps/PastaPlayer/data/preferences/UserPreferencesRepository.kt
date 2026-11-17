@@ -152,6 +152,8 @@ class UserPreferencesRepository @Inject constructor(
         val PLAYBACK_QUEUE_SNAPSHOT = stringPreferencesKey("playback_queue_snapshot_v1")
         val FULL_PLAYER_SHOW_FILE_INFO = booleanPreferencesKey("full_player_show_file_info")
         val SONG_VAULT_ENABLED = booleanPreferencesKey("song_vault_enabled_v1")
+        val SONG_VAULT_EXPERIMENTAL_NOTICE_ACKNOWLEDGED =
+            booleanPreferencesKey("song_vault_experimental_notice_acknowledged_v1")
         val FULL_PLAYER_DELAY_ALBUM = booleanPreferencesKey("full_player_delay_album")
         val FULL_PLAYER_DELAY_METADATA = booleanPreferencesKey("full_player_delay_metadata")
         val FULL_PLAYER_DELAY_PROGRESS = booleanPreferencesKey("full_player_delay_progress")
@@ -415,6 +417,14 @@ class UserPreferencesRepository @Inject constructor(
 
     suspend fun setSongVaultEnabled(enabled: Boolean) {
         dataStore.edit { it[PreferencesKeys.SONG_VAULT_ENABLED] = enabled }
+    }
+
+    /** Whether the user has already been warned that Song Vault is experimental. */
+    val songVaultExperimentalNoticeAcknowledgedFlow: Flow<Boolean> =
+        pref { it[PreferencesKeys.SONG_VAULT_EXPERIMENTAL_NOTICE_ACKNOWLEDGED] ?: false }
+
+    suspend fun setSongVaultExperimentalNoticeAcknowledged(acknowledged: Boolean) {
+        dataStore.edit { it[PreferencesKeys.SONG_VAULT_EXPERIMENTAL_NOTICE_ACKNOWLEDGED] = acknowledged }
     }
 
     val fullPlayerLoadingTweaksFlow: Flow<FullPlayerLoadingTweaks> =

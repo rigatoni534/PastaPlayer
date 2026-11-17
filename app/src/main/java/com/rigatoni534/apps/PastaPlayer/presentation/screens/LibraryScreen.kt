@@ -153,6 +153,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.SongInfoBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.LibraryActionRow
 import rigatoni534.apps.PastaPlayer.presentation.navigation.Screen
 import rigatoni534.apps.PastaPlayer.presentation.components.MultiSelectionBottomSheet
+import rigatoni534.apps.PastaPlayer.presentation.components.SongVaultExperimentalDialog
 import rigatoni534.apps.PastaPlayer.presentation.components.AlbumMultiSelectionOptionSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistMultiSelectionBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistCreationTypeDialog
@@ -1929,6 +1930,10 @@ fun LibraryScreen(
 
     // Multi-Selection Bottom Sheet
     val isSongVaultEnabled by songInfoBottomSheetViewModel.isSongVaultEnabled.collectAsStateWithLifecycle()
+    val isVaultNoticeAcknowledged by songInfoBottomSheetViewModel
+        .vaultExperimentalNoticeAcknowledged
+        .collectAsStateWithLifecycle()
+    var showVaultExperimentalDialog by remember { mutableStateOf(false) }
 
     if (showMultiSelectionSheet && selectedSongs.isNotEmpty()) {
         val activity = context as? android.app.Activity
@@ -1980,13 +1985,30 @@ fun LibraryScreen(
             },
             onMoveToVault = if (isSongVaultEnabled) {
                 {
-                    songInfoBottomSheetViewModel.moveSongsToVault(selectedSongs) { outcome ->
-                        Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
+                    if (isVaultNoticeAcknowledged) {
+                        songInfoBottomSheetViewModel.moveSongsToVault(selectedSongs) { outcome ->
+                            Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        showVaultExperimentalDialog = true
                     }
                 }
             } else {
                 null
             }
+        )
+    }
+
+    if (showVaultExperimentalDialog) {
+        SongVaultExperimentalDialog(
+            onConfirm = {
+                showVaultExperimentalDialog = false
+                songInfoBottomSheetViewModel.acknowledgeVaultExperimentalNotice()
+                songInfoBottomSheetViewModel.moveSongsToVault(selectedSongs) { outcome ->
+                    Toast.makeText(context, outcome.message, Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDismiss = { showVaultExperimentalDialog = false }
         )
     }
 

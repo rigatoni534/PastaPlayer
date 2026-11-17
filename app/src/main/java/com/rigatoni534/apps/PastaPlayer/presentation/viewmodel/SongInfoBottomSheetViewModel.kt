@@ -95,6 +95,18 @@ class SongInfoBottomSheetViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = true,
     )
+    val vaultExperimentalNoticeAcknowledged: StateFlow<Boolean> =
+        userPreferencesRepository.songVaultExperimentalNoticeAcknowledgedFlow.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = false,
+        )
+
+    fun acknowledgeVaultExperimentalNotice() {
+        viewModelScope.launch {
+            userPreferencesRepository.setSongVaultExperimentalNoticeAcknowledged(true)
+        }
+    }
 
     private val _isRequestingToWatch = MutableStateFlow(false)
     val watchTransfers: StateFlow<Map<String, PhoneWatchTransferState>> = transferStateStore.transfers

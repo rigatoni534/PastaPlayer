@@ -131,11 +131,28 @@ class SongVaultManager @Inject constructor(
             ?: return@withContext VaultResult.Failed(song.id, Failure.SOURCE_UNREADABLE)
 
         val directory = vaultDirectory
-        val target = File(directory, "$numericId.${resolveExtension(song)}")
-        val copied = runCatching { copyToFile(sourceUri, target) }.getOrDefault(false)
-        if (!copied || !target.exists() || target.length() <= 0L) {
-            runCatching { target.delete() }
-            return@withContext VaultResult.Failed(song.id, Failure.COPY_FAILED)
+        val extension = resolveExtension(song)
+        val target = File(directory, "$numericId.$extension")
+        // An existing, non-empty vault copy is reused and never overwritten: the safety
+        // rule is that a vault file can only disappear through an explicit restore.
+        val createdNewCopy = !target.exists() || target.length() <= 0L
+        if (createdNewCopy) {
+            // Copy into a temp file first so a partial copy can never become the vault copy.
+            val tempFile = File(directory, "$numericId.$extension.tmp")
+            val expectedLength = sourceLength(sourceUri)
+            val copied = runCatching { copyToFile(sourceUri, tempFile) }.getOrDefault(false)
+            if (!copied || !tempFile.exists() || tempFile.length() <= 0L) {
+                runCatching { tempFile.delete() }
+                return@withContext VaultResult.Failed(song.id, Failure.COPY_FAILED)
+            }
+            if (expectedLength > 0L && tempFile.length() != expectedLength) {
+                runCatching { tempFile.delete() }
+                return@withContext VaultResult.Failed(song.id, Failure.COPY_FAILED)
+            }
+            if (!tempFile.renameTo(target)) {
+                runCatching { tempFile.delete() }
+                return@withContext VaultResult.Failed(song.id, Failure.COPY_FAILED)
+            }
         }
 
         val parentDirectory = if (song.path.contains('/')) {
@@ -144,14 +161,22 @@ class SongVaultManager @Inject constructor(
             directory.absolutePath
         }
 
-        musicDao.markSongVaulted(
-            songId = numericId,
-            contentUri = Uri.fromFile(target).toString(),
-            filePath = target.absolutePath,
-            parentDirectoryPath = parentDirectory,
-            originalUri = sourceUriString,
-            originalPath = song.path.takeIf { it.isNotBlank() },
-        )
+        val recorded = runCatching {
+            musicDao.markSongVaulted(
+                songId = numericId,
+                contentUri = Uri.fromFile(target).toString(),
+                filePath = target.absolutePath,
+                parentDirectoryPath = parentDirectory,
+                originalUri = sourceUriString,
+                originalPath = song.path.takeIf { it.isNotBlank() },
+            )
+        }.isSuccess
+        if (!recorded) {
+            // Only remove a copy this attempt created: a pre-existing vault file is
+            // user data and is left untouched.
+            if (createdNewCopy) deleteVaultFile(target)
+            return@withContext VaultResult.Failed(song.id, Failure.COPY_FAILED)
+        }
 
         rewritePlaybackSnapshot(song.id, Uri.fromFile(target).toString())
 
@@ -180,13 +205,18 @@ class SongVaultManager @Inject constructor(
         val originalPath = row.vaultOriginalPath
         val originalUri = row.vaultOriginalUri
         if (!originalPath.isNullOrBlank() && File(originalPath).exists()) {
-            musicDao.clearSongVaultState(
-                songId = numericId,
-                contentUri = originalUri ?: originalPath,
-                filePath = originalPath,
-                parentDirectoryPath = originalPath.substringBeforeLast('/', ""),
-            )
-            runCatching { vaultFile.delete() }
+            val updated = runCatching {
+                musicDao.clearSongVaultState(
+                    songId = numericId,
+                    contentUri = originalUri ?: originalPath,
+                    filePath = originalPath,
+                    parentDirectoryPath = originalPath.substringBeforeLast('/', ""),
+                )
+            }.isSuccess
+            if (!updated) {
+                return@withContext VaultResult.Failed(songId, Failure.COPY_FAILED)
+            }
+            deleteVaultFile(vaultFile)
             rewritePlaybackSnapshot(songId, originalUri ?: originalPath)
             return@withContext VaultResult.Restored(songId, originalUri ?: originalPath)
         }
@@ -194,13 +224,18 @@ class SongVaultManager @Inject constructor(
         val export = exportToSharedMusic(row, vaultFile)
             ?: return@withContext VaultResult.Failed(songId, Failure.EXPORT_FAILED)
 
-        musicDao.clearSongVaultState(
-            songId = numericId,
-            contentUri = export.first,
-            filePath = export.second,
-            parentDirectoryPath = export.second.substringBeforeLast('/', ""),
-        )
-        runCatching { vaultFile.delete() }
+        val updated = runCatching {
+            musicDao.clearSongVaultState(
+                songId = numericId,
+                contentUri = export.first,
+                filePath = export.second,
+                parentDirectoryPath = export.second.substringBeforeLast('/', ""),
+            )
+        }.isSuccess
+        if (!updated) {
+            return@withContext VaultResult.Failed(songId, Failure.COPY_FAILED)
+        }
+        deleteVaultFile(vaultFile)
         rewritePlaybackSnapshot(songId, export.first)
         VaultResult.Restored(songId, export.first)
     }
@@ -226,6 +261,26 @@ class SongVaultManager @Inject constructor(
                 userPreferencesRepository.setPlaybackQueueSnapshot(snapshot.copy(items = items))
             }
         }
+    }
+
+    /** Deleting a vault file is only ever allowed inside the vault directory. */
+    private fun deleteVaultFile(file: File): Boolean {
+        if (!isInsideVault(file)) return false
+        return runCatching { file.delete() }.getOrDefault(false)
+    }
+
+    private fun isInsideVault(file: File): Boolean = runCatching {
+        file.canonicalPath.startsWith(vaultDirectory.canonicalPath + File.separator)
+    }.getOrDefault(false)
+
+    private fun sourceLength(sourceUri: Uri): Long {
+        if (sourceUri.scheme == "file") {
+            val path = sourceUri.path ?: return 0L
+            return runCatching { File(path).length() }.getOrDefault(0L)
+        }
+        return runCatching {
+            context.contentResolver.openAssetFileDescriptor(sourceUri, "r")?.use { it.length } ?: 0L
+        }.getOrDefault(0L)
     }
 
     private fun copyToFile(sourceUri: Uri, target: File): Boolean {
@@ -348,5 +403,9 @@ class SongVaultManager @Inject constructor(
     companion object {
         const val VAULT_DIR_NAME = "song_vault"
         private const val EXPORT_FOLDER = "Music/PastaPlayer"
+
+        /** True when [path] points into the app-private vault directory. */
+        fun isVaultStoragePath(path: String): Boolean =
+            path.contains("/$VAULT_DIR_NAME/")
     }
 }

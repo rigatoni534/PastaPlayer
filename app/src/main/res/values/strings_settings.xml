@@ -720,4 +720,10 @@
         <item quantity="one">%1$d song moved to the vault</item>
         <item quantity="other">%1$d songs moved to the vault</item>
     </plurals>
+    <!-- Song Vault: experimental warning + deletion safety -->
+    <string name="song_vault_experimental_title">Song Vault is experimental</string>
+    <string name="song_vault_experimental_body">Song Vault is experimental and not guaranteed to work. Moving audio into private app storage can break playback, artwork, metadata edits or restoring — and deleted originals can\'t be recovered. Keep your own backups before you use it.</string>
+    <string name="song_vault_experimental_confirm">Move anyway</string>
+    <string name="song_vault_experimental_settings_body">Experimental: not guaranteed to work. Vaulted songs may fail to play or restore, and the originals are removed from shared storage. Back up your music first.</string>
+    <string name="song_removal_vaulted_protected">Vaulted songs can\'t be deleted from the device. Remove them from the vault first.</string>
 </resources>

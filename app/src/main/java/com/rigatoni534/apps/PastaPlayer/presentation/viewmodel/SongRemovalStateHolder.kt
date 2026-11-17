@@ -7,6 +7,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.data.preferences.PlaylistPreferencesRepository
 import rigatoni534.apps.PastaPlayer.data.repository.MusicRepository
+import rigatoni534.apps.PastaPlayer.data.vault.SongVaultManager
 import rigatoni534.apps.PastaPlayer.utils.MediaStorePermissionHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ViewModelScoped
@@ -43,6 +44,7 @@ class SongRemovalStateHolder @Inject constructor(
     private val libraryStateHolder: LibraryStateHolder,
     private val playbackStateHolder: PlaybackStateHolder,
     private val multiSelectionStateHolder: MultiSelectionStateHolder,
+    private val songVaultManager: SongVaultManager,
     @param:ApplicationContext private val context: android.content.Context
 ) {
 
@@ -121,12 +123,25 @@ class SongRemovalStateHolder @Inject constructor(
         cb: SongRemovalCallbacks,
     ) {
         cb.scope.launch {
-            // Filter out currently playing song
+            // Filter out currently playing song and any vaulted song.
+            // Song Vault safety: a vaulted song's audio lives in app-private storage, so it
+            // must never be deleted through the device-deletion flow.
             val currentSongId = playbackStateHolder.stablePlayerState.value.currentSong?.id
-            val deletableSongs = songs.filter { it.id != currentSongId }
+            val vaultedIds = withContext(Dispatchers.IO) {
+                songs.filter { songVaultManager.isVaulted(it.id) }.map { it.id }.toSet()
+            }
+            val deletableSongs = songs.filter { it.id != currentSongId && it.id !in vaultedIds }
 
             if (deletableSongs.isEmpty()) {
-                cb.sendToast(context.getString(R.string.song_removal_cannot_delete_currently_playing))
+                cb.sendToast(
+                    context.getString(
+                        if (vaultedIds.isEmpty()) {
+                            R.string.song_removal_cannot_delete_currently_playing
+                        } else {
+                            R.string.song_removal_vaulted_protected
+                        }
+                    )
+                )
                 return@launch
             }
 
@@ -264,6 +279,13 @@ class SongRemovalStateHolder @Inject constructor(
             // Failsafe: Prevent deleting the currently playing song
             if (playbackStateHolder.stablePlayerState.value.currentSong?.id == song.id) {
                 cb.sendToast(context.getString(R.string.song_removal_cannot_delete_currently_playing))
+                onResult(false)
+                return@launch
+            }
+
+            // Song Vault safety: vaulted audio is never deletable.
+            if (withContext(Dispatchers.IO) { songVaultManager.isVaulted(song.id) }) {
+                cb.sendToast(context.getString(R.string.song_removal_vaulted_protected))
                 onResult(false)
                 return@launch
             }
