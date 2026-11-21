@@ -65,7 +65,7 @@ class DiscordLoginActivity : ComponentActivity() {
     companion object {
         const val EXTRA_TOKEN = "extra_discord_token"
         private const val LOGIN_URL = "https://discord.com/login"
-        private const val BACKGROUND_COLOR = Color.rgb(49, 51, 56)
+        private val BACKGROUND_COLOR = Color.rgb(49, 51, 56)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -223,7 +223,7 @@ private fun injectTokenIfDiscord(webView: WebView, url: String?) {
     }
 }
 
-private const val TOKEN_SNIPPET = """
+private val TOKEN_SNIPPET = """
 (function() {
   try {
     var token = null;
