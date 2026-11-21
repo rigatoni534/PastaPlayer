@@ -164,7 +164,7 @@ private fun moveQueueIndex(index: Int, fromIndex: Int, toIndex: Int): Int {
 }
 
 /** The next song in the queue, surfaced while the current track is about to end. */
-internal data class UpNextSong(
+data class UpNextSong(
     val id: String,
     val title: String,
     val artist: String,
