@@ -10,9 +10,8 @@
 
 > ### 🍝 PastaPlayer is a fork of PixelPlayer
 >
-> PastaPlayer is a fork of [PixelPlayer](https://github.com/theovilardo/PixelPlayer), the open source Android music player created by [Theo Vilardo](https://github.com/theovilardo).
+> PastaPlayer is a fork of [PixelPlayer](https://github.com/theovilardo/PixelPlayer), the open source Android music player created by [Theo Vilardo](https://github.com/theovilardo), which is now archived and not supported. This project remains its support.
 > All credit for the original app goes to Theo and the PixelPlayer contributors. This fork is maintained by [rigatoni534](https://github.com/rigatoni534)
-> and is not supported by the upstream project.
 
 <p align="center">
   <img src="assets/screenshot1.jpg" alt="Screenshot 1" width="200" style="border-radius:26px;"/>
