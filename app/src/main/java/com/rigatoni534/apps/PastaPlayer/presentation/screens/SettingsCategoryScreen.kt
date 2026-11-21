@@ -3,6 +3,7 @@ package rigatoni534.apps.PastaPlayer.presentation.screens
 import rigatoni534.apps.PastaPlayer.presentation.navigation.navigateSafely
 import rigatoni534.apps.PastaPlayer.presentation.components.BackupModuleSelectionDialog
 import rigatoni534.apps.PastaPlayer.data.preferences.AiPreferencesRepository
+import rigatoni534.apps.PastaPlayer.data.preferences.NotificationButton
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.Date
@@ -885,6 +886,45 @@ fun SettingsCategoryScreen(
                                     checked = uiState.showQueueHistory,
                                     onCheckedChange = { settingsViewModel.setShowQueueHistory(it) },
                                     leadingIcon = { Icon(painterResource(R.drawable.rounded_queue_music_24), null, tint = MaterialTheme.colorScheme.secondary) }
+                                )
+                            }
+
+                            SettingsSubsection(title = stringResource(R.string.settings_media_notification_section)) {
+                                SwitchSettingItem(
+                                    title = stringResource(R.string.settings_notification_button_like_title),
+                                    subtitle = stringResource(R.string.settings_notification_button_like_subtitle),
+                                    checked = uiState.notificationButtonPreferences.showLike,
+                                    onCheckedChange = {
+                                        settingsViewModel.setNotificationButtonVisible(NotificationButton.LIKE, it)
+                                    },
+                                    leadingIcon = { Icon(painterResource(R.drawable.rounded_favorite_24), null, tint = MaterialTheme.colorScheme.secondary) }
+                                )
+                                SwitchSettingItem(
+                                    title = stringResource(R.string.settings_notification_button_shuffle_title),
+                                    subtitle = stringResource(R.string.settings_notification_button_shuffle_subtitle),
+                                    checked = uiState.notificationButtonPreferences.showShuffle,
+                                    onCheckedChange = {
+                                        settingsViewModel.setNotificationButtonVisible(NotificationButton.SHUFFLE, it)
+                                    },
+                                    leadingIcon = { Icon(painterResource(R.drawable.rounded_shuffle_24), null, tint = MaterialTheme.colorScheme.secondary) }
+                                )
+                                SwitchSettingItem(
+                                    title = stringResource(R.string.settings_notification_button_repeat_title),
+                                    subtitle = stringResource(R.string.settings_notification_button_repeat_subtitle),
+                                    checked = uiState.notificationButtonPreferences.showRepeat,
+                                    onCheckedChange = {
+                                        settingsViewModel.setNotificationButtonVisible(NotificationButton.REPEAT, it)
+                                    },
+                                    leadingIcon = { Icon(painterResource(R.drawable.rounded_repeat_24), null, tint = MaterialTheme.colorScheme.secondary) }
+                                )
+                                SwitchSettingItem(
+                                    title = stringResource(R.string.settings_notification_button_close_title),
+                                    subtitle = stringResource(R.string.settings_notification_button_close_subtitle),
+                                    checked = uiState.notificationButtonPreferences.showClose,
+                                    onCheckedChange = {
+                                        settingsViewModel.setNotificationButtonVisible(NotificationButton.CLOSE, it)
+                                    },
+                                    leadingIcon = { Icon(Icons.Rounded.Close, null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                             }
 

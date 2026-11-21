@@ -80,6 +80,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
@@ -121,6 +124,8 @@ import rigatoni534.apps.PastaPlayer.data.preferences.CarouselStyle
 import rigatoni534.apps.PastaPlayer.data.preferences.FullPlayerLoadingTweaks
 import rigatoni534.apps.PastaPlayer.presentation.components.AlbumCarouselSection
 import rigatoni534.apps.PastaPlayer.presentation.components.AutoScrollingTextOnDemand
+import rigatoni534.apps.PastaPlayer.presentation.components.BlurredArtworkLayer
+import rigatoni534.apps.PastaPlayer.presentation.components.LocalBlurEffectsDisabled
 import rigatoni534.apps.PastaPlayer.presentation.components.LocalMaterialTheme
 import rigatoni534.apps.PastaPlayer.presentation.components.LyricsSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.scoped.rememberSmoothProgress
@@ -243,6 +248,9 @@ fun FullPlayerContent(
     var showArtistPicker by rememberSaveable { mutableStateOf(false) }
     
     val lyricsSearchUiState by playerViewModel.lyricsSearchUiState.collectAsStateWithLifecycle()
+    // Read from the single activity-level preference read shared by every blur layer;
+    // FullPlayerContent does not subscribe to the DataStore itself anymore.
+    val blurEffectsDisabled = LocalBlurEffectsDisabled.current
 
     // Single subscription — replaces 11 independent collectAsStateWithLifecycle calls.
     // distinctUntilChanged in the ViewModel ensures this only emits when something
@@ -512,6 +520,7 @@ fun FullPlayerContent(
             placeholderColor = placeholderColor,
             placeholderOnColor = placeholderOnColor,
             albumArtQuality = albumArtQuality,
+            featherAlbumArtEdges = !blurEffectsDisabled,
             requestedScrollIndex = pendingCarouselIndex,
             onSongSelected = onAlbumSongSelected,
             onAlbumClick = { albumSong ->
@@ -911,6 +920,38 @@ fun FullPlayerContent(
                 .fillMaxSize()
                 .graphicsLayer { alpha = contentAlpha }
         ) {
+            // Ambience: the current artwork, blurred into the surface and masked away
+            // towards the bottom so the controls keep a clean backing. The layer skips
+            // itself when the shared blur pref is disabled.
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clipToBounds()
+            ) {
+                BlurredArtworkLayer(
+                    uri = song.albumArtUriString,
+                    title = song.title,
+                    modifier = Modifier.fillMaxSize(),
+                    blurRadius = 90.dp,
+                    alpha = 0.35f,
+                    scale = 1.3f,
+                    sampleSizePx = 128,
+                    mask = {
+                        drawRect(
+                            brush = Brush.verticalGradient(
+                                colorStops = arrayOf(
+                                    0f to Color.Transparent,
+                                    0.25f to Color.Black,
+                                    0.6f to Color.Black,
+                                    1f to Color.Transparent
+                                )
+                            ),
+                            blendMode = BlendMode.DstIn
+                        )
+                    }
+                )
+            }
+
             if (isLandscape) {
                 FullPlayerLandscapeContent(
                     paddingValues = paddingValues,
@@ -1016,6 +1057,7 @@ private fun FullPlayerAlbumCoverSection(
     placeholderOnColor: Color,
     albumArtQuality: AlbumArtQuality,
     requestedScrollIndex: Int?,
+    featherAlbumArtEdges: Boolean,
     onSongSelected: (Song, Int) -> Unit,
     onAlbumClick: (Song) -> Unit,
     modifier: Modifier = Modifier
@@ -1100,7 +1142,8 @@ private fun FullPlayerAlbumCoverSection(
                         scaleX = albumArtScale
                         scaleY = albumArtScale
                     },
-                albumArtQuality = albumArtQuality
+                albumArtQuality = albumArtQuality,
+                featherFocusedArtwork = featherAlbumArtEdges
             )
         }
     }

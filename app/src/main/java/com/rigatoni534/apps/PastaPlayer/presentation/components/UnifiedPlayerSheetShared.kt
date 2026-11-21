@@ -2,6 +2,9 @@
 
 package rigatoni534.apps.PastaPlayer.presentation.components
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -29,23 +33,35 @@ import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.size.Size
+import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Song
+import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 
 internal val LocalMaterialTheme = compositionLocalOf<ColorScheme> { error("No ColorScheme provided") }
@@ -58,6 +74,76 @@ val MiniPlayerBottomSpacer = 8.dp
 fun getNavigationBarHeight(): Dp {
     val insets = WindowInsets.safeDrawing.asPaddingValues()
     return sanitizeNavigationBarBottomInset(insets.calculateBottomPadding())
+}
+
+/**
+ * Small pill shown just above the mini player while the current track is about to end.
+ * It names the song that comes next, pulled from [PlayerViewModel.upcomingTrackTitle].
+ */
+@Composable
+internal fun MiniPlayerUpNextLabel(
+    playerViewModel: PlayerViewModel,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true
+) {
+    val upcomingTitle by playerViewModel.upcomingTrackTitle
+        .collectAsStateWithLifecycle(initialValue = null)
+
+    // Keep the last title so the pill can fade out intact instead of collapsing
+    // into an empty bubble mid-animation.
+    var retainedTitle by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(upcomingTitle) {
+        if (upcomingTitle != null) retainedTitle = upcomingTitle
+    }
+    val shownTitle = retainedTitle ?: return
+
+    val targetAlpha = if (visible && upcomingTitle != null) 1f else 0f
+    val labelAlpha by animateFloatAsState(
+        targetValue = targetAlpha,
+        animationSpec = tween(durationMillis = if (targetAlpha > 0f) 220 else 160),
+        label = "upNextLabelAlpha"
+    )
+    val labelRise by animateDpAsState(
+        targetValue = if (targetAlpha > 0f) 0.dp else 4.dp,
+        animationSpec = tween(durationMillis = 220),
+        label = "upNextLabelRise"
+    )
+
+    Surface(
+        modifier = modifier.graphicsLayer {
+            alpha = labelAlpha
+            translationY = labelRise.toPx()
+        },
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.94f),
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        shadowElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.queue_next_up_label),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1
+            )
+            Text(
+                text = "  ·  ",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1
+            )
+            Text(
+                text = shownTitle,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+        }
+    }
 }
 
 @Composable

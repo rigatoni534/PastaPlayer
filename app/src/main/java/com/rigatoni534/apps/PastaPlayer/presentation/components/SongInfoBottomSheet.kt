@@ -73,6 +73,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -426,6 +427,30 @@ fun SongInfoBottomSheet(
                 .fillMaxWidth(),
             contentAlignment = Alignment.TopCenter
         ) {
+                // Blurred glance of the song's artwork behind the sheet header.
+                BlurredArtworkLayer(
+                    uri = song.albumArtUriString,
+                    title = song.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp),
+                    blurRadius = 70.dp,
+                    alpha = 0.3f,
+                    scale = 1.3f,
+                    sampleSizePx = 96,
+                    mask = {
+                        drawRect(
+                            brush = Brush.verticalGradient(
+                                colorStops = arrayOf(
+                                    0f to Color.Black,
+                                    0.4f to Color.Black,
+                                    1f to Color.Transparent
+                                )
+                            ),
+                            blendMode = BlendMode.DstIn
+                        )
+                    }
+                )
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {

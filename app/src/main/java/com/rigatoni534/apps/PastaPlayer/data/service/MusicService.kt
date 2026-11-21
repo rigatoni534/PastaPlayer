@@ -49,6 +49,7 @@ import rigatoni534.apps.PastaPlayer.data.model.PlayerInfo
 import rigatoni534.apps.PastaPlayer.data.model.PlaybackQueueItemSnapshot
 import rigatoni534.apps.PastaPlayer.data.model.PlaybackQueueSnapshot
 import rigatoni534.apps.PastaPlayer.data.preferences.EqualizerPreferencesRepository
+import rigatoni534.apps.PastaPlayer.data.preferences.NotificationButtonPreferences
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreferencesRepository
 import rigatoni534.apps.PastaPlayer.data.preferences.UserPreferencesRepository
 import rigatoni534.apps.PastaPlayer.data.repository.MusicRepository
@@ -190,6 +191,7 @@ class MusicService : MediaLibraryService() {
     private var keepPlayingInBackground = true
     private var isManualShuffleEnabled = false
     private var persistentShuffleEnabled = false
+    private var notificationButtonPreferences = NotificationButtonPreferences()
     // Holds the previous main-thread UncaughtExceptionHandler so we can restore it in onDestroy.
     private var previousMainThreadExceptionHandler: Thread.UncaughtExceptionHandler? = null
     // --- Counted Play State ---
@@ -525,6 +527,15 @@ class MusicService : MediaLibraryService() {
         serviceScope.launch {
             userPreferencesRepository.persistentShuffleEnabledFlow.collect { enabled ->
                 persistentShuffleEnabled = enabled
+            }
+        }
+
+        // Settings can add or remove the notification's custom buttons while it is showing.
+        serviceScope.launch {
+            userPreferencesRepository.notificationButtonPreferencesFlow.collect { preferences ->
+                if (preferences == notificationButtonPreferences) return@collect
+                notificationButtonPreferences = preferences
+                mediaSession?.let { refreshMediaSessionUi(it, force = true) }
             }
         }
 
@@ -2765,6 +2776,8 @@ class MusicService : MediaLibraryService() {
             append(isManualShuffleEnabled)
             append('|')
             append(player.repeatMode)
+            append('|')
+            append(notificationButtonPreferences)
         }
     }
 
@@ -2818,7 +2831,12 @@ class MusicService : MediaLibraryService() {
         // SLOT_BACK/SLOT_FORWARD buttons are present, Media3 strips the legacy
         // ACTION_SKIP_TO_PREVIOUS/NEXT flags from PlaybackStateCompat, which causes some
         // OEM compact system players (including ColorOS Control Center) to gray out skip.
-        return listOf(likeButton, closeButton, shuffleButton, repeatButton)
+        return buildList {
+            if (notificationButtonPreferences.showLike) add(likeButton)
+            if (notificationButtonPreferences.showShuffle) add(shuffleButton)
+            if (notificationButtonPreferences.showRepeat) add(repeatButton)
+            if (notificationButtonPreferences.showClose) add(closeButton)
+        }
     }
 
     // ------------------------

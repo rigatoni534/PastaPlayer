@@ -28,6 +28,8 @@ import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
 import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import rigatoni534.apps.PastaPlayer.data.preferences.AppLanguage
 import rigatoni534.apps.PastaPlayer.data.preferences.CollagePattern
+import rigatoni534.apps.PastaPlayer.data.preferences.NotificationButton
+import rigatoni534.apps.PastaPlayer.data.preferences.NotificationButtonPreferences
 import rigatoni534.apps.PastaPlayer.data.preferences.FullPlayerLoadingTweaks
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreferencesRepository
 import rigatoni534.apps.PastaPlayer.data.repository.LyricsRepository
@@ -103,6 +105,7 @@ data class SettingsUiState(
     val animatedLyricsBlurEnabled: Boolean = true,
     val animatedLyricsBlurStrength: Float = 2.5f,
     val disableBlurAllOver: Boolean = false,
+    val notificationButtonPreferences: NotificationButtonPreferences = NotificationButtonPreferences(),
     val backupInfoDismissed: Boolean = false,
     val isDataTransferInProgress: Boolean = false,
     val restorePlan: RestorePlan? = null,
@@ -744,6 +747,12 @@ class SettingsViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            userPreferencesRepository.notificationButtonPreferencesFlow.collect { preferences ->
+                _uiState.update { it.copy(notificationButtonPreferences = preferences) }
+            }
+        }
+
+        viewModelScope.launch {
             userPreferencesRepository.backupInfoDismissedFlow.collect { dismissed ->
                 _uiState.update { it.copy(backupInfoDismissed = dismissed) }
             }
@@ -1145,6 +1154,19 @@ class SettingsViewModel @Inject constructor(
     fun setDisableBlurAllOver(disabled: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.setDisableBlurAllOver(disabled)
+        }
+    }
+
+    fun setNotificationButtonVisible(button: NotificationButton, visible: Boolean) {
+        val current = _uiState.value.notificationButtonPreferences
+        val updated = when (button) {
+            NotificationButton.LIKE -> current.copy(showLike = visible)
+            NotificationButton.SHUFFLE -> current.copy(showShuffle = visible)
+            NotificationButton.REPEAT -> current.copy(showRepeat = visible)
+            NotificationButton.CLOSE -> current.copy(showClose = visible)
+        }
+        viewModelScope.launch {
+            userPreferencesRepository.setNotificationButtonPreferences(updated)
         }
     }
 

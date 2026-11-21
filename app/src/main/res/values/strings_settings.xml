@@ -218,6 +218,15 @@
     <string name="settings_disable_blur_all_over_subtitle">Turn off blur effects across the app to save battery and resources.</string>
     <string name="settings_show_scrollbar_title">Show Scrollbar</string>
     <string name="settings_show_scrollbar_subtitle">Display lateral scrollbar on music lists for quick scrolling</string>
+    <string name="settings_media_notification_section">Media notification</string>
+    <string name="settings_notification_button_like_title">Like button</string>
+    <string name="settings_notification_button_like_subtitle">Show a heart button that likes the current song.</string>
+    <string name="settings_notification_button_shuffle_title">Shuffle button</string>
+    <string name="settings_notification_button_shuffle_subtitle">Show a button that turns shuffle on or off.</string>
+    <string name="settings_notification_button_repeat_title">Repeat button</string>
+    <string name="settings_notification_button_repeat_subtitle">Show a button that cycles the repeat mode.</string>
+    <string name="settings_notification_button_close_title">Close player button</string>
+    <string name="settings_notification_button_close_subtitle">Show a button that stops playback and closes the notification.</string>
     <string name="settings_now_playing_section">Now Playing</string>
     <string name="settings_player_theme_title">Player Theme</string>
     <string name="settings_player_theme_subtitle">Choose the appearance for the floating player.</string>

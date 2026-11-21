@@ -101,7 +101,8 @@ fun ScreenWrapper(
     val previousEntryId = navController.previousBackStackEntry?.id.also { _ -> currentBackStackEntryState }
     val shouldDim = myEntry != null && previousEntryId == myEntry.id
 
-    val disableBlurAllOver by playerViewModel.disableBlurAllOver.collectAsState()
+    // Shared with every other blur layer; no extra DataStore subscription here.
+    val disableBlurAllOver = LocalBlurEffectsDisabled.current
 
     val transition = animatedVisibilityScope?.transition
 

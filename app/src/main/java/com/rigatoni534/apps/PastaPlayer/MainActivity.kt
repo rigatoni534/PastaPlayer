@@ -74,9 +74,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
@@ -122,7 +126,10 @@ import rigatoni534.apps.PastaPlayer.presentation.components.CrashReportDialog
 import rigatoni534.apps.PastaPlayer.presentation.components.DismissUndoBar
 import rigatoni534.apps.PastaPlayer.presentation.components.DrawerDestination
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerBottomSpacer
+import rigatoni534.apps.PastaPlayer.presentation.components.BlurredArtworkLayer
+import rigatoni534.apps.PastaPlayer.presentation.components.LocalBlurEffectsDisabled
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
+import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerUpNextLabel
 import rigatoni534.apps.PastaPlayer.presentation.components.PlayerInternalNavigationBar
 import rigatoni534.apps.PastaPlayer.presentation.components.PlayStoreAnnouncementDefaults
 import rigatoni534.apps.PastaPlayer.presentation.components.PlayStoreAnnouncementDialog
@@ -801,7 +808,9 @@ class MainActivity : ComponentActivity() {
 
         CompositionLocalProvider(
             LocalAppHapticsConfig provides appHapticsConfig,
-            LocalHapticFeedback provides scopedHapticFeedback
+            LocalHapticFeedback provides scopedHapticFeedback,
+            // One preference read for every blurred layer in the tree.
+            LocalBlurEffectsDisabled provides disableBlurAllOver
         ) {
             AppSidebarDrawer(
                 drawerState = drawerState,
@@ -832,6 +841,17 @@ class MainActivity : ComponentActivity() {
                                 .distinctUntilChanged()
                         }.collectAsStateWithLifecycle(initialValue = null)
                         val showPlayerContentArea = currentSongId != null
+                        // Glass bar: translucent so the blurred artwork panel behind it
+                        // reads through. Falls back to the solid container colour when
+                        // blur is unavailable, disabled, or there is nothing playing.
+                        val glassBarEnabled = !disableBlurAllOver &&
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                            showPlayerContentArea
+                        val navBarContainerColor = if (glassBarEnabled) {
+                            NavigationBarDefaults.containerColor.copy(alpha = 0.72f)
+                        } else {
+                            NavigationBarDefaults.containerColor
+                        }
                         val navBarElevation = 3.dp
 
                         val animatedNavBarCornerRadius = animateDpAsState(
@@ -919,7 +939,7 @@ class MainActivity : ComponentActivity() {
                                         clip = true
                                         shadowElevation = navBarElevationPx
                                     },
-                                color = NavigationBarDefaults.containerColor
+                                color = navBarContainerColor
                             ) {
                                 PlayerInternalNavigationBar(
                                     navController = navController,
@@ -1028,6 +1048,52 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        // One glass panel shared by the bottom bar and the mini player:
+                        // the current artwork, heavily blurred and faded out towards the
+                        // top, so the solid bar and the (still solid) mini player card
+                        // float on the same soft backing instead of ending on hard edges.
+                        val navBarGlassSong by remember {
+                            playerViewModel.stablePlayerState
+                                .map { it.currentSong }
+                                .distinctUntilChanged()
+                        }.collectAsStateWithLifecycle(initialValue = null)
+
+                        BlurredArtworkLayer(
+                            uri = navBarGlassSong?.albumArtUriString,
+                            title = navBarGlassSong?.title.orEmpty(),
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                                .requiredHeight(
+                                    navBarOccupiedHeight + MiniPlayerHeight + MiniPlayerBottomSpacer + 28.dp
+                                )
+                                .graphicsLayer {
+                                    // Read in the draw phase: no recomposition while the
+                                    // player expands/collapses or the bar hides.
+                                    alpha = (
+                                        (1f - playerViewModel.playerContentExpansionFraction.value) *
+                                            navBarVisibilityProgressState.value
+                                        ).coerceIn(0f, 1f)
+                                },
+                            blurRadius = 80.dp,
+                            alpha = 0.45f,
+                            scale = 1.2f,
+                            sampleSizePx = 96,
+                            mask = {
+                                drawRect(
+                                    brush = Brush.verticalGradient(
+                                        colorStops = arrayOf(
+                                            0f to Color.Transparent,
+                                            0.28f to Color.Black,
+                                            0.92f to Color.Black,
+                                            1f to Color.Transparent
+                                        )
+                                    ),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                        )
+
                         UnifiedPlayerSheetV2(
                             playerViewModel = playerViewModel,
                             sheetCollapsedTargetY = sheetCollapsedTargetY,
@@ -1036,6 +1102,29 @@ class MainActivity : ComponentActivity() {
                             containerHeight = containerHeight,
                             navController = navController,
                             isNavBarHidden = isNavBarEffectivelyHidden
+                        )
+
+                        // Sits right above the mini player while the current track is about
+                        // to end, so the next song is visible without opening the queue.
+                        MiniPlayerUpNextLabel(
+                            playerViewModel = playerViewModel,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(
+                                    start = horizontalPadding + 14.dp,
+                                    end = horizontalPadding + 14.dp,
+                                    bottom = innerPadding.calculateBottomPadding() +
+                                        MiniPlayerBottomSpacer + MiniPlayerHeight + 6.dp
+                                )
+                                .graphicsLayer {
+                                    // Fade with the player expansion and the nav bar slide,
+                                    // read in the draw phase.
+                                    alpha = (
+                                        (1f - playerViewModel.playerContentExpansionFraction.value) *
+                                            navBarVisibilityProgressState.value
+                                        ).coerceIn(0f, 1f)
+                                },
+                            visible = !shouldHideMiniPlayer
                         )
 
                         val dismissUndoBarSlice by remember {

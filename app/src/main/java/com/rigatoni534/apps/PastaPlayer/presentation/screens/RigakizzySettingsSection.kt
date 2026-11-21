@@ -1,17 +1,20 @@
 package rigatoni534.apps.PastaPlayer.presentation.screens
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -549,9 +553,10 @@ fun DiscordLoginDialog(
             color = MaterialTheme.colorScheme.surface,
             modifier = Modifier
                 .fillMaxWidth(0.94f)
+                .fillMaxHeight(0.9f)
                 .padding(vertical = 24.dp)
         ) {
-            Column {
+            Column(modifier = Modifier.fillMaxSize()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -592,6 +597,18 @@ fun DiscordLoginDialog(
                 AndroidView(
                     factory = { context ->
                         WebView(context).apply {
+                            // A WebView hosted by AndroidView never clips itself to its
+                            // layout bounds (b/242463987). Inside a dialog window that makes
+                            // the page draw outside the composited layer, which looks like a
+                            // blank panel that still reacts to taps. clipToOutline needs an
+                            // opaque background to have an outline at all, and the explicit
+                            // background also stops a transparent page from rendering as
+                            // nothing over the dialog surface.
+                            clipToOutline = true
+                            setBackgroundColor(DISCORD_LOGIN_BACKGROUND)
+                            // Some dialog windows drop the WebView's implicit hardware
+                            // layer; forcing a layer keeps the Chromium output composited.
+                            setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                             settings.javaScriptEnabled = true
                             settings.domStorageEnabled = true
                             settings.databaseEnabled = true
@@ -625,7 +642,8 @@ fun DiscordLoginDialog(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(520.dp)
+                        .weight(1f)
+                        .clipToBounds()
                 )
                 OutlinedButton(
                     onClick = onDismiss,
@@ -677,3 +695,6 @@ private const val TOKEN_SNIPPET = """
   } catch (e) {}
 })();
 """
+
+/** Discord's own dark page background, shown until the login page paints itself. */
+private val DISCORD_LOGIN_BACKGROUND = Color.rgb(0x31, 0x33, 0x38)

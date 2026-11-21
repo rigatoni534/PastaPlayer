@@ -249,6 +249,12 @@ class UserPreferencesRepository @Inject constructor(
         val REPLAYGAIN_USE_ALBUM_GAIN = booleanPreferencesKey("replaygain_use_album_gain")
         val PAUSE_ON_VOLUME_ZERO = booleanPreferencesKey("pause_on_volume_zero")
         val SHOW_SCROLLBAR = booleanPreferencesKey("show_scrollbar")
+
+        // Media notification buttons
+        val NOTIFICATION_BUTTON_LIKE = booleanPreferencesKey("notification_button_like")
+        val NOTIFICATION_BUTTON_SHUFFLE = booleanPreferencesKey("notification_button_shuffle")
+        val NOTIFICATION_BUTTON_REPEAT = booleanPreferencesKey("notification_button_repeat")
+        val NOTIFICATION_BUTTON_CLOSE = booleanPreferencesKey("notification_button_close")
     }
 
     // ─── Private helpers ─────────────────────────────────────────────────────
@@ -1185,6 +1191,27 @@ suspend fun markDirectoryRulesVersionApplied(version: Int) {
     suspend fun setDisableBlurAllOver(disabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.DISABLE_BLUR_ALL_OVER] = disabled
+        }
+    }
+
+    // ─── Media notification buttons ────────────────────────────────────────
+
+    val notificationButtonPreferencesFlow: Flow<NotificationButtonPreferences> =
+        pref { preferences ->
+            NotificationButtonPreferences(
+                showLike = preferences[PreferencesKeys.NOTIFICATION_BUTTON_LIKE] ?: true,
+                showShuffle = preferences[PreferencesKeys.NOTIFICATION_BUTTON_SHUFFLE] ?: true,
+                showRepeat = preferences[PreferencesKeys.NOTIFICATION_BUTTON_REPEAT] ?: true,
+                showClose = preferences[PreferencesKeys.NOTIFICATION_BUTTON_CLOSE] ?: true
+            )
+        }
+
+    suspend fun setNotificationButtonPreferences(preferences: NotificationButtonPreferences) {
+        dataStore.edit { prefs ->
+            prefs[PreferencesKeys.NOTIFICATION_BUTTON_LIKE] = preferences.showLike
+            prefs[PreferencesKeys.NOTIFICATION_BUTTON_SHUFFLE] = preferences.showShuffle
+            prefs[PreferencesKeys.NOTIFICATION_BUTTON_REPEAT] = preferences.showRepeat
+            prefs[PreferencesKeys.NOTIFICATION_BUTTON_CLOSE] = preferences.showClose
         }
     }
 

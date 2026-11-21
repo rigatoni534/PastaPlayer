@@ -119,6 +119,7 @@ import coil.memory.MemoryCache
 import dagger.Lazy
 
 private const val CAST_LOG_TAG = "PlayerCastTransfer"
+private const val UpNextRevealWindowMs = 15_000L
 private const val ENABLE_FOLDERS_SOURCE_SWITCHING = true
 private const val HOME_MIX_PREVIEW_LIMIT = 48
 private const val EXTERNAL_SONG_ID_PREFIX = "external:"
@@ -254,6 +255,32 @@ class PlayerViewModel @Inject constructor(
      * Keep a dedicated position flow for real-time UI elements (seek bars, lyrics timing).
      */
     val currentPlaybackPosition: StateFlow<Long> = playbackStateHolder.currentPosition
+
+    /**
+     * Title of the song that plays next, but only during the last [UpNextRevealWindowMs] of the
+     * current track — this drives the "Next up" pill above the mini player. Emits null when
+     * nothing is queued next or the track is still far from its end. The queue stays inside
+     * this flow, so the mini player does not collect the whole queue.
+     */
+    val upcomingTrackTitle: Flow<String?> = combine(
+        currentPlaybackPosition,
+        stablePlayerState,
+        queueFlow
+    ) { position, state, queue ->
+        val song = state.currentSong ?: return@combine null
+        val duration = state.totalDuration
+        // Skip very short tracks so the pill is not permanently visible on them.
+        if (duration < UpNextRevealWindowMs * 2L) return@combine null
+        if (duration - position > UpNextRevealWindowMs) return@combine null
+
+        val index = state.currentMediaItemIndex.takeIf { it in queue.indices }
+            ?: queue.indexOfFirst { it.id == song.id }
+        if (index < 0) return@combine null
+
+        val next = queue.getOrNull(index + 1)
+            ?: if (state.repeatMode == Player.REPEAT_MODE_ALL) queue.firstOrNull() else null
+        next?.title
+    }.distinctUntilChanged()
     val playbackHistory = listeningStatsTracker.playbackHistory
 
     // Removed: _masterAllSongs was a duplicate of libraryStateHolder.allSongs

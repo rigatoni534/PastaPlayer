@@ -111,6 +111,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -758,6 +759,35 @@ fun QueueBottomSheet(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+            // Blurred glow of the current track behind the queue header, so the
+            // sheet opens on the album's colours instead of a flat panel.
+            val glassQueueSong = remember(queue, currentSongId) {
+                queue.firstOrNull { it.id == currentSongId }
+            }
+            BlurredArtworkLayer(
+                uri = glassQueueSong?.albumArtUriString,
+                title = glassQueueSong?.title.orEmpty(),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(200.dp),
+                blurRadius = 70.dp,
+                alpha = 0.32f,
+                scale = 1.25f,
+                sampleSizePx = 96,
+                mask = {
+                    drawRect(
+                        brush = Brush.verticalGradient(
+                            colorStops = arrayOf(
+                                0f to Color.Black,
+                                0.45f to Color.Black,
+                                1f to Color.Transparent
+                            )
+                        ),
+                        blendMode = BlendMode.DstIn
+                    )
+                }
+            )
             Column {
                 val headerTopPadding = WindowInsets.statusBars
                     .asPaddingValues()

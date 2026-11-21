@@ -10,6 +10,9 @@ import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -49,7 +52,10 @@ fun AlbumCarouselSection(
     modifier: Modifier = Modifier,
     carouselStyle: String = CarouselStyle.NO_PEEK,
     itemSpacing: Dp = 8.dp,
-    albumArtQuality: AlbumArtQuality = AlbumArtQuality.MEDIUM
+    albumArtQuality: AlbumArtQuality = AlbumArtQuality.MEDIUM,
+    // Softens the focused artwork's rim with a blurred copy of itself so the art
+    // melts into the background instead of ending on a hard edge.
+    featherFocusedArtwork: Boolean = false
 ) {
     if (queue.isEmpty()) return
 
@@ -219,6 +225,32 @@ fun AlbumCarouselSection(
                              "${song.albumArtUriString}?quality=thumb"
                         } else null
                     )
+
+                    if (featherFocusedArtwork && isFocusedItem) {
+                        // Ring mask: the centre is left fully transparent so the sharp
+                        // artwork underneath stays crisp, while the rim is taken over by
+                        // the blurred copy, which is itself soft at its own bounds.
+                        BlurredArtworkLayer(
+                            uri = song.albumArtUriString,
+                            title = song.title,
+                            modifier = Modifier.fillMaxSize(),
+                            blurRadius = 28.dp,
+                            sampleSizePx = 256,
+                            mask = {
+                                drawRect(
+                                    brush = Brush.radialGradient(
+                                        colorStops = arrayOf(
+                                            0.62f to Color.Transparent,
+                                            1f to Color.Black
+                                        ),
+                                        center = center,
+                                        radius = size.minDimension * 0.5f
+                                    ),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                        )
+                    }
                 }
             }
         )
