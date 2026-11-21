@@ -2,6 +2,7 @@ package rigatoni534.apps.PastaPlayer.presentation.components.player
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.Uri
 import rigatoni534.apps.PastaPlayer.data.model.Lyrics
@@ -64,6 +65,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,6 +90,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.ScreenRotation
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -248,10 +259,6 @@ fun FullPlayerContent(
     var showArtistPicker by rememberSaveable { mutableStateOf(false) }
     
     val lyricsSearchUiState by playerViewModel.lyricsSearchUiState.collectAsStateWithLifecycle()
-    // Read from the single activity-level preference read shared by every blur layer;
-    // FullPlayerContent does not subscribe to the DataStore itself anymore.
-    val blurEffectsDisabled = LocalBlurEffectsDisabled.current
-
     // Single subscription — replaces 11 independent collectAsStateWithLifecycle calls.
     // distinctUntilChanged in the ViewModel ensures this only emits when something
     // actually changed, batching multiple rapid updates into one recomposition.
@@ -334,6 +341,33 @@ fun FullPlayerContent(
 
     val isLandscape =
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    // Desk mode: force landscape while it is on, then restore whatever orientation the
+    // activity had before (which may itself be a user lock).
+    val deskModeEnabled by playerViewModel.deskModeEnabled.collectAsStateWithLifecycle()
+    val hostActivity = remember(context) { context.findActivity() }
+    var orientationBeforeDeskMode by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(deskModeEnabled, hostActivity) {
+        val host = hostActivity ?: return@LaunchedEffect
+        if (deskModeEnabled) {
+            if (orientationBeforeDeskMode == null) {
+                orientationBeforeDeskMode = host.requestedOrientation
+            }
+            host.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        } else {
+            orientationBeforeDeskMode?.let { host.requestedOrientation = it }
+            orientationBeforeDeskMode = null
+        }
+    }
+
+    DisposableEffect(hostActivity) {
+        onDispose {
+            orientationBeforeDeskMode?.let { previous ->
+                hostActivity?.requestedOrientation = previous
+            }
+        }
+    }
 
 
     // Lógica para el botón de Lyrics en el reproductor expandido
@@ -520,7 +554,7 @@ fun FullPlayerContent(
             placeholderColor = placeholderColor,
             placeholderOnColor = placeholderOnColor,
             albumArtQuality = albumArtQuality,
-            featherAlbumArtEdges = !blurEffectsDisabled,
+            featherAlbumArtEdges = false,
             requestedScrollIndex = pendingCarouselIndex,
             onSongSelected = onAlbumSongSelected,
             onAlbumClick = { albumSong ->
@@ -572,7 +606,10 @@ fun FullPlayerContent(
             isFavoriteProvider = isFavoriteProvider,
             onShuffleToggle = onShuffleToggle,
             onRepeatToggle = onRepeatToggle,
-            onFavoriteToggle = onFavoriteToggle
+            onFavoriteToggle = onFavoriteToggle,
+            // The song info sheet is where metadata editing lives.
+            onEditMetadata = { playerViewModel.selectSongForInfo(song) },
+            onDeskMode = { playerViewModel.setDeskModeEnabled(true) }
         )
     }
 
@@ -620,6 +657,20 @@ fun FullPlayerContent(
             onArtistClick = onSongMetadataArtistClick,
             isPlayingProvider = isPlayingProvider
         )
+    }
+
+    if (deskModeEnabled) {
+        DeskModeContent(
+            song = song,
+            lyricsProvider = lyricsProvider,
+            positionProvider = currentPositionProvider,
+            durationProvider = { totalDurationValue },
+            isPlayingProvider = isPlayingProvider,
+            onPlayPause = onPlayPause,
+            onSeek = onSeek,
+            onExit = { playerViewModel.setDeskModeEnabled(false) }
+        )
+        return
     }
 
     Scaffold(
@@ -1076,16 +1127,12 @@ private fun FullPlayerAlbumCoverSection(
     )
 
     BoxWithConstraints(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
-        val carouselHeight = when (carouselStyle) {
-            CarouselStyle.NO_PEEK -> maxWidth
-            CarouselStyle.ONE_PEEK -> maxWidth * 0.8f
-            CarouselStyle.TWO_PEEK -> maxWidth * 0.6f
-            else -> maxWidth * 0.8f
-        }
+        // Edge-to-edge artwork: full width, capped by the height left over for the
+        // metadata and controls so short windows still fit everything.
+        val heightBudget = if (constraints.hasBoundedHeight) maxHeight * 0.58f else maxWidth
+        val carouselHeight = minOf(maxWidth, heightBudget)
 
         DelayedContent(
             shouldDelay = shouldDelay,
@@ -1146,6 +1193,23 @@ private fun FullPlayerAlbumCoverSection(
                 featherFocusedArtwork = featherAlbumArtEdges
             )
         }
+
+        // The artwork dissolves into the player surface instead of ending on a hard rim.
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(carouselHeight * 0.34f)
+                .background(
+                    Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0f to Color.Transparent,
+                            0.55f to LocalMaterialTheme.current.primaryContainer.copy(alpha = 0.6f),
+                            1f to LocalMaterialTheme.current.primaryContainer
+                        )
+                    )
+                )
+        )
     }
 }
 
@@ -1169,7 +1233,9 @@ private fun FullPlayerControlsSection(
     isFavoriteProvider: () -> Boolean,
     onShuffleToggle: () -> Unit,
     onRepeatToggle: () -> Unit,
-    onFavoriteToggle: () -> Unit
+    onFavoriteToggle: () -> Unit,
+    onEditMetadata: () -> Unit,
+    onDeskMode: () -> Unit
 ) {
     val motionScheme = remember { MotionScheme.expressive() }
     val controlSpatialSpec = remember { motionScheme.fastSpatialSpec<Float>() }
@@ -1232,7 +1298,9 @@ private fun FullPlayerControlsSection(
                 isFavoriteProvider = isFavoriteProvider,
                 onShuffleToggle = onShuffleToggle,
                 onRepeatToggle = onRepeatToggle,
-                onFavoriteToggle = onFavoriteToggle
+                onFavoriteToggle = onFavoriteToggle,
+                onEditMetadata = onEditMetadata,
+                onDeskMode = onDeskMode
             )
         }
     }
@@ -1424,18 +1492,16 @@ private fun FullPlayerPortraitContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
-            .padding(
-                horizontal = 24.dp,
-                vertical = 0.dp
-            ),
+            .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround
     ) {
-        albumCoverSection(Modifier)
+        albumCoverSection(Modifier.fillMaxWidth())
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Box(Modifier.align(Alignment.Start)) {
@@ -2593,13 +2659,20 @@ private fun BottomToggleRow(
     isFavoriteProvider: () -> Boolean,
     onShuffleToggle: () -> Unit,
     onRepeatToggle: () -> Unit,
-    onFavoriteToggle: () -> Unit
+    onFavoriteToggle: () -> Unit,
+    onEditMetadata: () -> Unit = {},
+    onDeskMode: () -> Unit = {}
 ) {
     val isFavorite = isFavoriteProvider()
     val rowCorners = 60.dp
     val inactiveBg = LocalMaterialTheme.current.onSurface.copy(alpha = 0.07f)
     val inactiveContentColor = LocalMaterialTheme.current.onSurface
-
+    var menuExpanded by remember { mutableStateOf(false) }
+    val plusRotation by animateFloatAsState(
+        targetValue = if (menuExpanded) 45f else 0f,
+        animationSpec = tween(durationMillis = 260),
+        label = "plusRotation"
+    )
 
     Box(
         modifier = modifier.background(
@@ -2680,6 +2753,103 @@ private fun BottomToggleRow(
                 onClick = onFavoriteToggle,
                 iconId = if (isFavorite) R.drawable.round_favorite_24 else R.drawable.rounded_favorite_24,
                 contentDesc = "Favorito"
+            )
+
+            // The "+" grows into a small action menu that unfolds up and to the left of
+            // the button, so the row itself never changes size while it is open.
+            val density = LocalDensity.current
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(inactiveBg)
+                    .clickable { menuExpanded = !menuExpanded },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Add,
+                    contentDescription = "More actions",
+                    tint = inactiveContentColor,
+                    modifier = Modifier.graphicsLayer { rotationZ = plusRotation }
+                )
+
+                if (menuExpanded) {
+                    Popup(
+                        alignment = Alignment.BottomEnd,
+                        offset = IntOffset(0, -with(density) { 8.dp.roundToPx() }),
+                        onDismissRequest = { menuExpanded = false },
+                        properties = PopupProperties(focusable = true)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.End,
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            PlayerActionChip(
+                                label = "Favorite",
+                                icon = Icons.Rounded.FavoriteBorder,
+                                isActive = isFavorite,
+                                onClick = {
+                                    menuExpanded = false
+                                    onFavoriteToggle()
+                                }
+                            )
+                            PlayerActionChip(
+                                label = "Edit metadata",
+                                icon = Icons.Rounded.Edit,
+                                onClick = {
+                                    menuExpanded = false
+                                    onEditMetadata()
+                                }
+                            )
+                            PlayerActionChip(
+                                label = "Desk mode",
+                                icon = Icons.Rounded.ScreenRotation,
+                                onClick = {
+                                    menuExpanded = false
+                                    onDeskMode()
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** One entry of the "+" menu: a compact pill with an icon and a label. */
+@Composable
+private fun PlayerActionChip(
+    label: String,
+    icon: ImageVector,
+    isActive: Boolean = false,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(50),
+        color = LocalMaterialTheme.current.surfaceContainerHigh,
+        contentColor = LocalMaterialTheme.current.onSurface,
+        shadowElevation = 3.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (isActive) {
+                    LocalMaterialTheme.current.primary
+                } else {
+                    LocalMaterialTheme.current.onSurfaceVariant
+                },
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge
             )
         }
     }

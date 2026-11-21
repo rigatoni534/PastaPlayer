@@ -79,6 +79,7 @@ import androidx.compose.material.icons.rounded.BlurOff
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.MusicNote
@@ -925,6 +926,13 @@ fun SettingsCategoryScreen(
                                         settingsViewModel.setNotificationButtonVisible(NotificationButton.CLOSE, it)
                                     },
                                     leadingIcon = { Icon(Icons.Rounded.Close, null, tint = MaterialTheme.colorScheme.secondary) }
+                                )
+                                SwitchSettingItem(
+                                    title = stringResource(R.string.settings_next_song_notification_title),
+                                    subtitle = stringResource(R.string.settings_next_song_notification_subtitle),
+                                    checked = uiState.nextSongNotificationEnabled,
+                                    onCheckedChange = { settingsViewModel.setNextSongNotificationEnabled(it) },
+                                    leadingIcon = { Icon(Icons.Rounded.NotificationsActive, null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                             }
 

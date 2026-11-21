@@ -48,6 +48,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -62,6 +63,7 @@ import coil.size.Size
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
+import rigatoni534.apps.PastaPlayer.presentation.viewmodel.UpNextSong
 import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 
 internal val LocalMaterialTheme = compositionLocalOf<ColorScheme> { error("No ColorScheme provided") }
@@ -77,8 +79,9 @@ fun getNavigationBarHeight(): Dp {
 }
 
 /**
- * Small pill shown just above the mini player while the current track is about to end.
- * It names the song that comes next, pulled from [PlayerViewModel.upcomingTrackTitle].
+ * Pill shown just above the mini player while the current track is about to end. It names
+ * the song that comes next, over a blurred copy of that song's artwork, and is pulled from
+ * [PlayerViewModel.upcomingTrack].
  */
 @Composable
 internal fun MiniPlayerUpNextLabel(
@@ -86,18 +89,18 @@ internal fun MiniPlayerUpNextLabel(
     modifier: Modifier = Modifier,
     visible: Boolean = true
 ) {
-    val upcomingTitle by playerViewModel.upcomingTrackTitle
+    val upcoming by playerViewModel.upcomingTrack
         .collectAsStateWithLifecycle(initialValue = null)
 
-    // Keep the last title so the pill can fade out intact instead of collapsing
+    // Keep the last song so the pill can fade out intact instead of collapsing
     // into an empty bubble mid-animation.
-    var retainedTitle by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(upcomingTitle) {
-        if (upcomingTitle != null) retainedTitle = upcomingTitle
+    var retained by remember { mutableStateOf<UpNextSong?>(null) }
+    LaunchedEffect(upcoming) {
+        if (upcoming != null) retained = upcoming
     }
-    val shownTitle = retainedTitle ?: return
+    val shown = retained ?: return
 
-    val targetAlpha = if (visible && upcomingTitle != null) 1f else 0f
+    val targetAlpha = if (visible && upcoming != null) 1f else 0f
     val labelAlpha by animateFloatAsState(
         targetValue = targetAlpha,
         animationSpec = tween(durationMillis = if (targetAlpha > 0f) 220 else 160),
@@ -108,36 +111,54 @@ internal fun MiniPlayerUpNextLabel(
         animationSpec = tween(durationMillis = 220),
         label = "upNextLabelRise"
     )
+    val shape = RoundedCornerShape(28.dp)
 
-    Surface(
-        modifier = modifier.graphicsLayer {
-            alpha = labelAlpha
-            translationY = labelRise.toPx()
-        },
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.94f),
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        shadowElevation = 2.dp
+    Box(
+        modifier = modifier
+            .graphicsLayer {
+                alpha = labelAlpha
+                translationY = labelRise.toPx()
+            }
+            .clip(shape)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
     ) {
+        BlurredArtworkLayer(
+            uri = shown.albumArtUri,
+            title = shown.title,
+            modifier = Modifier.matchParentSize(),
+            blurRadius = 24.dp,
+            alpha = 0.85f,
+            scale = 1.35f,
+            sampleSizePx = 64,
+            mask = { drawRect(Color.Black) }
+        )
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                imageVector = Icons.Rounded.SkipNext,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = stringResource(R.string.queue_next_up_label),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1
             )
             Text(
                 text = "  ·  ",
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
             )
             Text(
-                text = shownTitle,
-                style = MaterialTheme.typography.labelMedium,
+                text = shown.title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f, fill = false)

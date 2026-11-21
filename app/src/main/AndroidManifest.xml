@@ -86,6 +86,13 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".presentation.discord.auth.DiscordLoginActivity"
+            android:exported="false"
+            android:label="Discord Login"
+            android:theme="@style/Theme.PastaPlay"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".presentation.netease.auth.NeteaseLoginActivity"
             android:exported="false"
             android:label="Netease Login"

@@ -5,6 +5,8 @@ import android.app.BackgroundServiceStartNotAllowedException
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.PendingIntent
 import android.content.ComponentName
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -21,6 +23,7 @@ import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.media3.common.C
@@ -192,6 +195,8 @@ class MusicService : MediaLibraryService() {
     private var isManualShuffleEnabled = false
     private var persistentShuffleEnabled = false
     private var notificationButtonPreferences = NotificationButtonPreferences()
+    private var nextSongNotificationsEnabled = false
+    private var lastNextSongNotificationSignature: String? = null
     // Holds the previous main-thread UncaughtExceptionHandler so we can restore it in onDestroy.
     private var previousMainThreadExceptionHandler: Thread.UncaughtExceptionHandler? = null
     // --- Counted Play State ---
@@ -536,6 +541,21 @@ class MusicService : MediaLibraryService() {
                 if (preferences == notificationButtonPreferences) return@collect
                 notificationButtonPreferences = preferences
                 mediaSession?.let { refreshMediaSessionUi(it, force = true) }
+            }
+        }
+
+        // Optional heads-up naming the next song just before the current one ends.
+        serviceScope.launch {
+            userPreferencesRepository.nextSongNotificationEnabledFlow.collect { enabled ->
+                nextSongNotificationsEnabled = enabled
+                if (!enabled) cancelNextSongNotification()
+            }
+        }
+
+        serviceScope.launch {
+            while (true) {
+                delay(NEXT_SONG_CHECK_INTERVAL_MS)
+                maybeNotifyNextSong()
             }
         }
 
@@ -1039,6 +1059,78 @@ class MusicService : MediaLibraryService() {
         cancelDurationSleepTimerInternal()
         endOfTrackTimerSongId = null
         Timber.tag(TAG).d("Sleep timers cancelled from Wear")
+    }
+
+    /**
+     * Posts the "next song" notification once per (current -> next) handoff, but only
+     * when the user enabled it and the current track is inside the reveal window.
+     */
+    private fun maybeNotifyNextSong() {
+        if (!nextSongNotificationsEnabled) return
+        val player = mediaSession?.player ?: return
+        if (!player.isPlaying) return
+
+        val currentIndex = player.currentMediaItemIndex
+        if (currentIndex == C.INDEX_UNSET) return
+        val nextIndex = currentIndex + 1
+        if (nextIndex >= player.mediaItemCount) return
+
+        val duration = player.duration
+        if (duration <= 0L) return
+        if (duration - player.currentPosition > NEXT_SONG_NOTIFY_WINDOW_MS) return
+
+        val currentItem = player.currentMediaItem ?: return
+        val nextItem = player.getMediaItemAt(nextIndex)
+        val signature = "${currentItem.mediaId}->${nextItem.mediaId}"
+        if (signature == lastNextSongNotificationSignature) return
+        lastNextSongNotificationSignature = signature
+
+        postNextSongNotification(nextItem)
+    }
+
+    private fun postNextSongNotification(nextItem: MediaItem) {
+        try {
+            ensureNextSongNotificationChannel()
+            val title = nextItem.mediaMetadata.title?.toString().orEmpty()
+            val artist = nextItem.mediaMetadata.artist?.toString().orEmpty()
+            val text = if (artist.isBlank()) {
+                title
+            } else {
+                getString(R.string.notification_next_song_text, title, artist)
+            }
+            val notification = NotificationCompat.Builder(this, NEXT_SONG_CHANNEL_ID)
+                .setSmallIcon(R.drawable.monochrome_player)
+                .setContentTitle(getString(R.string.notification_next_song_title))
+                .setContentText(text)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+                .setContentIntent(getOpenAppPendingIntent())
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
+                .build()
+            NotificationManagerCompat.from(this).notify(NEXT_SONG_NOTIFICATION_ID, notification)
+        } catch (e: SecurityException) {
+            Timber.tag(TAG).w(e, "Next song notification permission denied")
+        }
+    }
+
+    private fun cancelNextSongNotification() {
+        lastNextSongNotificationSignature = null
+        runCatching { NotificationManagerCompat.from(this).cancel(NEXT_SONG_NOTIFICATION_ID) }
+    }
+
+    private fun ensureNextSongNotificationChannel() {
+        val manager = getSystemService(NotificationManager::class.java) ?: return
+        if (manager.getNotificationChannel(NEXT_SONG_CHANNEL_ID) != null) return
+        val channel = NotificationChannel(
+            NEXT_SONG_CHANNEL_ID,
+            getString(R.string.notification_next_song_channel),
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = getString(R.string.notification_next_song_channel_description)
+        }
+        manager.createNotificationChannel(channel)
     }
 
     private fun startTemporaryForegroundForCommand() {
@@ -2932,3 +3024,10 @@ class MusicService : MediaLibraryService() {
         return future
     }
 }
+
+/** How often the service checks whether the current track is about to hand over. */
+private const val NEXT_SONG_CHECK_INTERVAL_MS = 3_000L
+/** Same window the mini player's "Next up" pill uses. */
+private const val NEXT_SONG_NOTIFY_WINDOW_MS = 30_000L
+private const val NEXT_SONG_CHANNEL_ID = "pastaplayer_next_song"
+private const val NEXT_SONG_NOTIFICATION_ID = 4711

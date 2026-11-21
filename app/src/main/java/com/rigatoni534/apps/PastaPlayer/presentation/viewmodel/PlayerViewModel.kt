@@ -119,7 +119,7 @@ import coil.memory.MemoryCache
 import dagger.Lazy
 
 private const val CAST_LOG_TAG = "PlayerCastTransfer"
-private const val UpNextRevealWindowMs = 15_000L
+private const val UpNextRevealWindowMs = 30_000L
 private const val ENABLE_FOLDERS_SOURCE_SWITCHING = true
 private const val HOME_MIX_PREVIEW_LIMIT = 48
 private const val EXTERNAL_SONG_ID_PREFIX = "external:"
@@ -162,6 +162,14 @@ private fun moveQueueIndex(index: Int, fromIndex: Int, toIndex: Int): Int {
         else -> index
     }
 }
+
+/** The next song in the queue, surfaced while the current track is about to end. */
+internal data class UpNextSong(
+    val id: String,
+    val title: String,
+    val artist: String,
+    val albumArtUri: String?
+)
 
 private data class AiUiSnapshot(
     val showAiPlaylistSheet: Boolean,
@@ -257,12 +265,12 @@ class PlayerViewModel @Inject constructor(
     val currentPlaybackPosition: StateFlow<Long> = playbackStateHolder.currentPosition
 
     /**
-     * Title of the song that plays next, but only during the last [UpNextRevealWindowMs] of the
-     * current track — this drives the "Next up" pill above the mini player. Emits null when
-     * nothing is queued next or the track is still far from its end. The queue stays inside
-     * this flow, so the mini player does not collect the whole queue.
+     * The song that plays next, but only during the last [UpNextRevealWindowMs] of the current
+     * track — this drives the "Next up" pill above the mini player. Emits null when nothing is
+     * queued next or the track is still far from its end. The queue stays inside this flow, so
+     * the mini player does not collect the whole queue.
      */
-    val upcomingTrackTitle: Flow<String?> = combine(
+    val upcomingTrack: Flow<UpNextSong?> = combine(
         currentPlaybackPosition,
         stablePlayerState,
         queueFlow
@@ -279,8 +287,28 @@ class PlayerViewModel @Inject constructor(
 
         val next = queue.getOrNull(index + 1)
             ?: if (state.repeatMode == Player.REPEAT_MODE_ALL) queue.firstOrNull() else null
-        next?.title
+        next?.let {
+            UpNextSong(
+                id = it.id,
+                title = it.title,
+                artist = it.displayArtist,
+                albumArtUri = it.albumArtUriString
+            )
+        }
     }.distinctUntilChanged()
+
+    private val _deskModeEnabled = MutableStateFlow(false)
+
+    /**
+     * Desk mode: the full player turns into a landscape lyrics view with only a seek bar and
+     * a pause button. Purely a presentation state, so it lives with the player and is cleared
+     * whenever the player collapses.
+     */
+    val deskModeEnabled: StateFlow<Boolean> = _deskModeEnabled.asStateFlow()
+
+    fun setDeskModeEnabled(enabled: Boolean) {
+        _deskModeEnabled.value = enabled
+    }
     val playbackHistory = listeningStatsTracker.playbackHistory
 
     // Removed: _masterAllSongs was a duplicate of libraryStateHolder.allSongs
@@ -2140,6 +2168,8 @@ class PlayerViewModel @Inject constructor(
 
     fun collapsePlayerSheet(resetPredictiveState: Boolean = true) {
         _sheetState.value = PlayerSheetState.COLLAPSED
+        // Desk mode only exists inside the expanded player.
+        _deskModeEnabled.value = false
         if (resetPredictiveState) {
             resetPredictiveBackState()
         }

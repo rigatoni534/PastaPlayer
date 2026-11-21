@@ -1,6 +1,8 @@
 package rigatoni534.apps.PastaPlayer.presentation.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Handler
@@ -9,6 +11,8 @@ import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +59,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.discord.RigakizzyStatus
 import rigatoni534.apps.PastaPlayer.data.preferences.RigakizzyPreset
 import rigatoni534.apps.PastaPlayer.data.preferences.RigakizzySettings
+import rigatoni534.apps.PastaPlayer.presentation.discord.auth.DiscordLoginActivity
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.RigakizzyViewModel
 
 /**
@@ -532,137 +538,31 @@ private fun AssetKeysEditor(
 }
 
 /**
- * Discord login WebView, ported from Kizzy/Rigakizzy's `DiscordLoginWebView`.
- * The user signs in normally; PastaPlayer reads the resulting session token from the
- * page's localStorage and stores it locally.
+ * Opens Discord's login screen in [DiscordLoginActivity].
+ *
+ * The page needs a hardware-accelerated window layer. Inside a dialog-hosted WebView it
+ * accepts taps but paints nothing on some devices, so the login now runs in its own
+ * Activity and reports the token back through the activity result.
  */
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun DiscordLoginDialog(
     onDismiss: () -> Unit,
     onToken: (String) -> Unit,
 ) {
-    var webView by remember { mutableStateOf<WebView?>(null) }
-
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Surface(
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            modifier = Modifier
-                .fillMaxWidth(0.94f)
-                .fillMaxHeight(0.9f)
-                .padding(vertical = 24.dp)
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 8.dp, top = 12.dp)
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.rigakizzy_login_dialog_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = stringResource(R.string.rigakizzy_login_dialog_body),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            contentDescription = stringResource(R.string.rigakizzy_close)
-                        )
-                    }
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
-                    Text(
-                        text = stringResource(R.string.rigakizzy_login_dialog_waiting),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                AndroidView(
-                    factory = { context ->
-                        WebView(context).apply {
-                            // A WebView hosted by AndroidView never clips itself to its
-                            // layout bounds (b/242463987). Inside a dialog window that makes
-                            // the page draw outside the composited layer, which looks like a
-                            // blank panel that still reacts to taps. clipToOutline needs an
-                            // opaque background to have an outline at all, and the explicit
-                            // background also stops a transparent page from rendering as
-                            // nothing over the dialog surface.
-                            clipToOutline = true
-                            setBackgroundColor(DISCORD_LOGIN_BACKGROUND)
-                            // Some dialog windows drop the WebView's implicit hardware
-                            // layer; forcing a layer keeps the Chromium output composited.
-                            setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-                            settings.javaScriptEnabled = true
-                            settings.domStorageEnabled = true
-                            settings.databaseEnabled = true
-                            addJavascriptInterface(
-                                object {
-                                    @JavascriptInterface
-                                    fun onToken(token: String) {
-                                        Handler(Looper.getMainLooper()).post { onToken(token) }
-                                    }
-                                },
-                                "PastaPlayerDiscord"
-                            )
-                            webViewClient = object : WebViewClient() {
-                                override fun onPageFinished(view: WebView, url: String?) {
-                                    super.onPageFinished(view, url)
-                                    injectTokenIfDiscord(view, url)
-                                }
-
-                                override fun doUpdateVisitedHistory(
-                                    view: WebView,
-                                    url: String?,
-                                    isReload: Boolean,
-                                ) {
-                                    super.doUpdateVisitedHistory(view, url, isReload)
-                                    injectTokenIfDiscord(view, url)
-                                }
-                            }
-                            loadUrl("https://discord.com/login")
-                            webView = this
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .clipToBounds()
-                )
-                OutlinedButton(
-                    onClick = onDismiss,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 8.dp)
-                ) {
-                    Text(stringResource(R.string.rigakizzy_close))
-                }
-            }
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val token = result.data?.getStringExtra(DiscordLoginActivity.EXTRA_TOKEN)
+        if (result.resultCode == Activity.RESULT_OK && !token.isNullOrBlank()) {
+            onToken(token)
+        } else {
+            onDismiss()
         }
     }
 
-    LaunchedEffect(webView) {
-        val view = webView ?: return@LaunchedEffect
-        repeat(40) {
-            delay(1_500)
-            injectTokenIfDiscord(view, view.url)
-        }
+    LaunchedEffect(Unit) {
+        launcher.launch(Intent(context, DiscordLoginActivity::class.java))
     }
 }
 

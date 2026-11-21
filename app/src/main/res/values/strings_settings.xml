@@ -802,4 +802,12 @@
     <string name="vault_setup_subtitle">Optional: keep songs out of shared storage</string>
     <string name="vault_setup_body">Song Vault moves songs into PastaPlayer\'s private storage so they no longer sit in your music folders. You can vault and restore songs from the library at any time.</string>
     <string name="setup_extras_themes_note">Themes, colors and layout can be changed later in Settings → Themes and Settings → Appearance.</string>
+    <!-- Next song -->
+    <string name="settings_next_song_notification_title">Next song notification</string>
+    <string name="settings_next_song_notification_subtitle">Send a phone notification naming the next song shortly before the current one ends</string>
+    <string name="notification_next_song_channel">Next song</string>
+    <string name="notification_next_song_channel_description">Tells you which song plays next while music is playing</string>
+    <string name="notification_next_song_title">Up next</string>
+    <string name="notification_next_song_text">%1$s · %2$s</string>
+    <string name="desk_mode_no_lyrics">No lyrics for this song</string>
 </resources>

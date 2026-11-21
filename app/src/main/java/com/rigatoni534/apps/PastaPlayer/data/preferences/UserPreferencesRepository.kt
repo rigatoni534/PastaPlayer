@@ -252,6 +252,7 @@ class UserPreferencesRepository @Inject constructor(
 
         // Media notification buttons
         val NOTIFICATION_BUTTON_LIKE = booleanPreferencesKey("notification_button_like")
+        val NEXT_SONG_NOTIFICATION_ENABLED = booleanPreferencesKey("next_song_notification_enabled")
         val NOTIFICATION_BUTTON_SHUFFLE = booleanPreferencesKey("notification_button_shuffle")
         val NOTIFICATION_BUTTON_REPEAT = booleanPreferencesKey("notification_button_repeat")
         val NOTIFICATION_BUTTON_CLOSE = booleanPreferencesKey("notification_button_close")
@@ -1213,6 +1214,15 @@ suspend fun markDirectoryRulesVersionApplied(version: Int) {
             prefs[PreferencesKeys.NOTIFICATION_BUTTON_REPEAT] = preferences.showRepeat
             prefs[PreferencesKeys.NOTIFICATION_BUTTON_CLOSE] = preferences.showClose
         }
+    }
+
+    // ─── Next song notification ─────────────────────────────────────────────
+
+    val nextSongNotificationEnabledFlow: Flow<Boolean> =
+        pref { it[PreferencesKeys.NEXT_SONG_NOTIFICATION_ENABLED] ?: false }
+
+    suspend fun setNextSongNotificationEnabled(enabled: Boolean) {
+        dataStore.edit { it[PreferencesKeys.NEXT_SONG_NOTIFICATION_ENABLED] = enabled }
     }
 
     // ─── Collage ──────────────────────────────────────────────────────────────

@@ -648,6 +648,8 @@ class MainActivity : ComponentActivity() {
                 BottomNavItem("Library", R.string.nav_bar_library, R.drawable.rounded_library_music_24, R.drawable.round_library_music_24, Screen.Library)
             )
         }
+        // Desk mode hides the bar and the mini player; the full player takes over.
+        val deskModeEnabled by playerViewModel.deskModeEnabled.collectAsStateWithLifecycle()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         var isSearchBarActive by remember { mutableStateOf(false) }
@@ -680,9 +682,11 @@ class MainActivity : ComponentActivity() {
                 Screen.WordDelimiterConfig.route
             )
         }
-        val shouldHideNavigationBar by remember(currentRoute, isSearchBarActive) {
+        val shouldHideNavigationBar by remember(currentRoute, isSearchBarActive, deskModeEnabled) {
             derivedStateOf {
-                if (currentRoute == Screen.Search.route && isSearchBarActive) {
+                if (deskModeEnabled) {
+                    true
+                } else if (currentRoute == Screen.Search.route && isSearchBarActive) {
                     true
                 } else {
                     currentRoute?.let { route ->
@@ -841,14 +845,15 @@ class MainActivity : ComponentActivity() {
                                 .distinctUntilChanged()
                         }.collectAsStateWithLifecycle(initialValue = null)
                         val showPlayerContentArea = currentSongId != null
-                        // Glass bar: translucent so the blurred artwork panel behind it
-                        // reads through. Falls back to the solid container colour when
-                        // blur is unavailable, disabled, or there is nothing playing.
+                        // Glass bar: almost fully transparent so the content and the
+                        // blurred artwork panel behind it read through, with the bar's
+                        // own surface reduced to a faint veil. Falls back to the solid
+                        // container colour when blur is unavailable, disabled, or there
+                        // is nothing playing.
                         val glassBarEnabled = !disableBlurAllOver &&
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                            showPlayerContentArea
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                         val navBarContainerColor = if (glassBarEnabled) {
-                            NavigationBarDefaults.containerColor.copy(alpha = 0.72f)
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.08f)
                         } else {
                             NavigationBarDefaults.containerColor
                         }
@@ -969,8 +974,10 @@ class MainActivity : ComponentActivity() {
                                 .distinctUntilChanged()
                         }.collectAsStateWithLifecycle(initialValue = false)
                         val routesWithHiddenMiniPlayer = remember { setOf(Screen.NavBarCrRad.route) }
-                        val shouldHideMiniPlayer by remember(currentRoute) {
-                            derivedStateOf { currentRoute in routesWithHiddenMiniPlayer }
+                        val shouldHideMiniPlayer by remember(currentRoute, deskModeEnabled) {
+                            derivedStateOf {
+                                deskModeEnabled || currentRoute in routesWithHiddenMiniPlayer
+                            }
                         }
 
                         val miniPlayerH = with(density) { MiniPlayerHeight.toPx() }
@@ -1075,18 +1082,22 @@ class MainActivity : ComponentActivity() {
                                             navBarVisibilityProgressState.value
                                         ).coerceIn(0f, 1f)
                                 },
-                            blurRadius = 80.dp,
-                            alpha = 0.45f,
+                            blurRadius = 72.dp,
+                            alpha = 0.55f,
                             scale = 1.2f,
                             sampleSizePx = 96,
                             mask = {
+                                // Fade upward into the list instead of starting on a
+                                // visible band: the glass is strongest right behind
+                                // the mini player and dissolves towards the top.
                                 drawRect(
                                     brush = Brush.verticalGradient(
                                         colorStops = arrayOf(
                                             0f to Color.Transparent,
-                                            0.28f to Color.Black,
-                                            0.92f to Color.Black,
-                                            1f to Color.Transparent
+                                            0.22f to Color.Black.copy(alpha = 0.35f),
+                                            0.55f to Color.Black.copy(alpha = 0.8f),
+                                            0.85f to Color.Black,
+                                            1f to Color.Black.copy(alpha = 0.9f)
                                         )
                                     ),
                                     blendMode = BlendMode.DstIn

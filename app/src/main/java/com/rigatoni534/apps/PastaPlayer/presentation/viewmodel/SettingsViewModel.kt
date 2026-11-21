@@ -106,6 +106,7 @@ data class SettingsUiState(
     val animatedLyricsBlurStrength: Float = 2.5f,
     val disableBlurAllOver: Boolean = false,
     val notificationButtonPreferences: NotificationButtonPreferences = NotificationButtonPreferences(),
+    val nextSongNotificationEnabled: Boolean = false,
     val backupInfoDismissed: Boolean = false,
     val isDataTransferInProgress: Boolean = false,
     val restorePlan: RestorePlan? = null,
@@ -753,6 +754,12 @@ class SettingsViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            userPreferencesRepository.nextSongNotificationEnabledFlow.collect { enabled ->
+                _uiState.update { it.copy(nextSongNotificationEnabled = enabled) }
+            }
+        }
+
+        viewModelScope.launch {
             userPreferencesRepository.backupInfoDismissedFlow.collect { dismissed ->
                 _uiState.update { it.copy(backupInfoDismissed = dismissed) }
             }
@@ -1154,6 +1161,12 @@ class SettingsViewModel @Inject constructor(
     fun setDisableBlurAllOver(disabled: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.setDisableBlurAllOver(disabled)
+        }
+    }
+
+    fun setNextSongNotificationEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.setNextSongNotificationEnabled(enabled)
         }
     }
 
