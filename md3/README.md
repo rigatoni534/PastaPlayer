@@ -62,12 +62,6 @@ Compose BOM in your app is still recommended so every module resolves the same v
    }
    ```
 
-### Download the archive
-
-The whole module is also checked in as [`release/1.zip`](release/1.zip). Unzip it in your
-project root — it expands to `md3/…` — then apply the two Gradle lines from the previous
-option.
-
 ### As a git submodule
 
 ```bash
