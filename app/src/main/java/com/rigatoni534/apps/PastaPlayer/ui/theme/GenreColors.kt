@@ -5,10 +5,8 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import rigatoni534.apps.PastaPlayer.data.model.Genre
-import rigatoni534.apps.md3.Md3PaletteStyle
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import kotlin.math.abs
-import rigatoni534.apps.md3.generateColorSchemeFromSeed
-import rigatoni534.apps.md3.generateMonochromeColorSchemeFromSeed
 
 data class GenreThemeColor(
     val container: Color,
@@ -130,7 +128,7 @@ object GenreThemeUtils {
         genre: Genre?,
         isDark: Boolean,
         genreIdFallback: String = "unknown",
-        paletteStyle: Md3PaletteStyle = Md3PaletteStyle.EXPRESSIVE
+        paletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.EXPRESSIVE
     ): ColorScheme {
         val effectiveGenreId = genre?.id?.takeIf { it.isNotBlank() } ?: genreIdFallback
         val forceMonochrome = isUnknownGenreId(effectiveGenreId)
@@ -154,7 +152,7 @@ object GenreThemeUtils {
     fun getGenreColorScheme(
         genreId: String,
         isDark: Boolean,
-        paletteStyle: Md3PaletteStyle = Md3PaletteStyle.EXPRESSIVE
+        paletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.EXPRESSIVE
     ): ColorScheme {
         return getGenreColorScheme(
             genre = null,
@@ -168,7 +166,7 @@ object GenreThemeUtils {
         genre: Genre?,
         isDark: Boolean,
         fallbackGenreId: String = "unknown",
-        paletteStyle: Md3PaletteStyle = Md3PaletteStyle.default
+        paletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.default
     ): ColorScheme {
         val effectiveGenreId = genre?.id?.takeIf { it.isNotBlank() } ?: fallbackGenreId
         val referenceColor = getGenreThemeColor(
@@ -187,7 +185,7 @@ object GenreThemeUtils {
     fun getColorSchemeFromSeed(
         seedColor: Color,
         isDark: Boolean,
-        paletteStyle: Md3PaletteStyle = Md3PaletteStyle.EXPRESSIVE,
+        paletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.EXPRESSIVE,
         forceMonochrome: Boolean = false
     ): ColorScheme {
         val normalizedSeed = if (forceMonochrome) unknownSeedColor else seedColor
@@ -229,7 +227,7 @@ object GenreThemeUtils {
     private fun buildColorSchemeCacheKey(
         seed: Color,
         isDark: Boolean,
-        paletteStyle: Md3PaletteStyle,
+        paletteStyle: AlbumArtPaletteStyle,
         forceMonochrome: Boolean
     ): Int {
         return (((seed.toArgb() * 31) + if (isDark) 1 else 0) * 31 + paletteStyle.ordinal) * 31 +

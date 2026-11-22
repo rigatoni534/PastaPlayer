@@ -4,11 +4,11 @@ import android.net.Uri
 import android.content.ComponentCallbacks2
 import android.os.Trace
 import androidx.compose.ui.graphics.Color
-import rigatoni534.apps.md3.Md3ColorAccuracy
-import rigatoni534.apps.md3.Md3PaletteStyle
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreferencesRepository
-import rigatoni534.apps.md3.Md3DarkColorScheme
-import rigatoni534.apps.md3.clearExtractedColorCache
+import rigatoni534.apps.PastaPlayer.ui.theme.DarkColorScheme
+import rigatoni534.apps.PastaPlayer.ui.theme.clearExtractedColorCache
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import rigatoni534.apps.md3.ColorSchemePair
 
 @Singleton
 class ThemeStateHolder @Inject constructor(
@@ -32,9 +31,9 @@ class ThemeStateHolder @Inject constructor(
 
     private var scope: CoroutineScope? = null
     @Volatile
-    private var currentPaletteStyle: Md3PaletteStyle = Md3PaletteStyle.default
+    private var currentPaletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.default
     @Volatile
-    private var currentPaletteAccuracy: Int = Md3ColorAccuracy.DEFAULT
+    private var currentPaletteAccuracy: Int = AlbumArtColorAccuracy.DEFAULT
 
     private val _currentAlbumArtColorSchemePair = MutableStateFlow<ColorSchemePair?>(null)
     val currentAlbumArtColorSchemePair: StateFlow<ColorSchemePair?> = _currentAlbumArtColorSchemePair.asStateFlow()
@@ -128,7 +127,7 @@ class ThemeStateHolder @Inject constructor(
     }
 
     private fun updateLavaLampColors(schemePair: ColorSchemePair?) {
-        val schemeForLava = schemePair?.dark ?: Md3DarkColorScheme
+        val schemeForLava = schemePair?.dark ?: DarkColorScheme
         _lavaLampColors.update {
             listOf(schemeForLava.primary, schemeForLava.secondary, schemeForLava.tertiary).distinct().toImmutableList()
         }
@@ -252,7 +251,7 @@ class ThemeStateHolder @Inject constructor(
 
          val newScheme = if (regenerateAllStyles) {
              var selectedStyleScheme: ColorSchemePair? = null
-             Md3PaletteStyle.entries.forEach { style ->
+             AlbumArtPaletteStyle.entries.forEach { style ->
                  val generated = colorSchemeProcessor.getOrGenerateColorScheme(
                      albumArtUri = uriString,
                      paletteStyle = style,

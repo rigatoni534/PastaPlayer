@@ -61,11 +61,11 @@ import coil.request.ImageRequest
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Artist
 import rigatoni534.apps.PastaPlayer.data.model.Song
-import rigatoni534.apps.md3.Md3PaletteStyle
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import rigatoni534.apps.PastaPlayer.presentation.components.AutoScrollingTextOnDemand
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveTopBarContent
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveScrollBar
-import rigatoni534.apps.md3.LocalMd3ShowScrollbar
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
 import rigatoni534.apps.PastaPlayer.presentation.components.GenreSortBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImageCompactListTargetSize
@@ -81,7 +81,7 @@ import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SectionData
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.AlbumData
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.StablePlayerState
-import rigatoni534.apps.md3.LocalMd3DarkTheme
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
 import rigatoni534.apps.PastaPlayer.utils.formatDuration
 import rigatoni534.apps.PastaPlayer.utils.formatSongCount
 import kotlinx.collections.immutable.persistentListOf
@@ -139,7 +139,7 @@ fun GenreDetailScreen(
     }
 
     val density = LocalDensity.current
-    val darkMode = LocalMd3DarkTheme.current
+    val darkMode = LocalPastaPlayDarkTheme.current
 
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
@@ -157,7 +157,7 @@ fun GenreDetailScreen(
             1f - ((topBarHeight.value - minTopBarHeightPx) / (maxTopBarHeightPx - minTopBarHeightPx)).coerceIn(0f, 1f)
         }
     }
-    val isScrollbarEnabled = LocalMd3ShowScrollbar.current
+    val isScrollbarEnabled = LocalShowScrollbar.current
     val showScrollBar by remember(isScrollbarEnabled) {
         derivedStateOf {
             isScrollbarEnabled &&
@@ -275,7 +275,7 @@ fun GenreDetailScreen(
     val customGenres by playerViewModel.customGenres.collectAsStateWithLifecycle()
     val customGenreIcons by playerViewModel.customGenreIcons.collectAsStateWithLifecycle()
     val genrePaletteStyle by playerViewModel.albumArtPaletteStyle.collectAsStateWithLifecycle(
-        initialValue = Md3PaletteStyle.default
+        initialValue = AlbumArtPaletteStyle.default
     )
     val isMiniPlayerVisible = stablePlayerState.currentSong != null
     val fabBottomPadding by animateDpAsState(

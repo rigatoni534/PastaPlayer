@@ -1,4 +1,4 @@
-package rigatoni534.apps.md3
+package rigatoni534.apps.PastaPlayer.presentation.viewmodel
 
 import androidx.compose.material3.ColorScheme
 

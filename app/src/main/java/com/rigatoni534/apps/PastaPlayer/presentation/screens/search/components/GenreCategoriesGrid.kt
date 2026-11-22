@@ -48,7 +48,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.getNavigationBarHeig
 import rigatoni534.apps.PastaPlayer.presentation.components.resolveNavBarOccupiedHeight
 import rigatoni534.apps.PastaPlayer.presentation.utils.GenreIconProvider
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
-import rigatoni534.apps.md3.LocalMd3DarkTheme
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
 import androidx.compose.ui.res.stringResource
 import rigatoni534.apps.PastaPlayer.R
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
@@ -180,7 +180,7 @@ private fun GenreCard(
     onLongPress: () -> Unit = {},
     onSelectionToggle: () -> Unit = {}
 ) {
-    val isDark = LocalMd3DarkTheme.current
+    val isDark = LocalPastaPlayDarkTheme.current
     val themeColor = remember(genre, isDark) {
         rigatoni534.apps.PastaPlayer.ui.theme.GenreThemeUtils.getGenreThemeColor(
             genre = genre,

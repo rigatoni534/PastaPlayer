@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import rigatoni534.apps.md3.ColorSchemePair
 
 /**
  * Holds the full UI state for ArtistDetailScreen.

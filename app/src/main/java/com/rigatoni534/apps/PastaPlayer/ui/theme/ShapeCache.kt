@@ -1,4 +1,4 @@
-package rigatoni534.apps.md3
+package rigatoni534.apps.PastaPlayer.ui.theme
 
 import androidx.compose.ui.unit.dp
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape

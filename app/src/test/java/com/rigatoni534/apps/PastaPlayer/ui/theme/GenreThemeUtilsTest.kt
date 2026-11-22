@@ -5,17 +5,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.google.common.truth.Truth.assertThat
 import rigatoni534.apps.PastaPlayer.data.model.Genre
-import rigatoni534.apps.md3.Md3PaletteStyle
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import org.junit.Test
-import rigatoni534.apps.md3.generateColorSchemeFromSeed
-import rigatoni534.apps.md3.generateMonochromeColorSchemeFromSeed
 
 class GenreThemeUtilsTest {
 
     @Test
     fun getGenreDetailColorScheme_usesGenreCardContainerAsSeedInLightTheme() {
         val genre = Genre(id = "rock", name = "Rock")
-        val paletteStyle = Md3PaletteStyle.VIBRANT
+        val paletteStyle = AlbumArtPaletteStyle.VIBRANT
         val cardColor = GenreThemeUtils.getGenreThemeColor(
             genre = genre,
             isDark = false,
@@ -39,7 +37,7 @@ class GenreThemeUtilsTest {
     @Test
     fun getGenreDetailColorScheme_usesGenreCardContainerAsSeedInDarkTheme() {
         val genre = Genre(id = "hip_hop", name = "Hip Hop")
-        val paletteStyle = Md3PaletteStyle.EXPRESSIVE
+        val paletteStyle = AlbumArtPaletteStyle.EXPRESSIVE
         val cardColor = GenreThemeUtils.getGenreThemeColor(
             genre = genre,
             isDark = true,
@@ -66,7 +64,7 @@ class GenreThemeUtilsTest {
             genre = null,
             isDark = false,
             fallbackGenreId = "unknown",
-            paletteStyle = Md3PaletteStyle.FRUIT_SALAD
+            paletteStyle = AlbumArtPaletteStyle.FRUIT_SALAD
         )
         val expected = generateMonochromeColorSchemeFromSeed(Color(0xFF7C7D84)).light
 

@@ -65,8 +65,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import rigatoni534.apps.PastaPlayer.R
-import rigatoni534.apps.md3.ExpTitleTypography
-import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.ExpTitleTypography
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)

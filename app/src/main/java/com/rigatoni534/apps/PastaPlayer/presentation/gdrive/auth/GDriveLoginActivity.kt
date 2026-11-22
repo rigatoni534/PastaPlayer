@@ -38,7 +38,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import rigatoni534.apps.PastaPlayer.data.gdrive.GDriveConstants
-import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

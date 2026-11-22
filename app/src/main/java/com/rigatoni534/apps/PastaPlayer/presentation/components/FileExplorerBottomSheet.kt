@@ -89,8 +89,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import rigatoni534.apps.PastaPlayer.presentation.screens.TabAnimation
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.DirectoryEntry
-import rigatoni534.apps.md3.GoogleSansRounded
-import rigatoni534.apps.md3.LocalMd3ShowScrollbar
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
 import rigatoni534.apps.PastaPlayer.utils.StorageInfo
 import java.io.File
 
@@ -397,7 +397,7 @@ fun FileExplorerContent(
                                     ),
                                 contentPadding = PaddingValues(
                                     bottom = 24.dp,
-                                    end = if (LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 24.dp else 0.dp
+                                    end = if (LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 24.dp else 0.dp
                                 ),
                                 verticalArrangement = Arrangement.spacedBy(10.dp),
                                 state = listState

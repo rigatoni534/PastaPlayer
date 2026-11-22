@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import rigatoni534.apps.PastaPlayer.data.database.NeteasePlaylistEntity
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImage
-import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource

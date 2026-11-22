@@ -30,7 +30,7 @@ import rigatoni534.apps.PastaPlayer.presentation.navidrome.auth.NavidromeLoginAc
 import rigatoni534.apps.PastaPlayer.presentation.netease.auth.NeteaseLoginActivity
 import rigatoni534.apps.PastaPlayer.presentation.qqmusic.auth.QqMusicLoginActivity
 import rigatoni534.apps.PastaPlayer.presentation.telegram.auth.TelegramLoginActivity
-import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 
 /**
  * Bottom sheet that lets the user choose between streaming providers.

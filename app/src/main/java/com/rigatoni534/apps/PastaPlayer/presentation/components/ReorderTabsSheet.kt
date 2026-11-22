@@ -56,7 +56,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.presentation.library.LibraryTabId
 import rigatoni534.apps.PastaPlayer.presentation.utils.LocalAppHapticsConfig
 import rigatoni534.apps.PastaPlayer.presentation.utils.performAppCompatHapticFeedback
-import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape

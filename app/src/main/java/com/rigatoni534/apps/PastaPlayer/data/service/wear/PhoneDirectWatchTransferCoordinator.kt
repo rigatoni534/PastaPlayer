@@ -14,8 +14,8 @@ import com.google.android.gms.wearable.Wearable
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.data.navidrome.NavidromeStreamProxy
 import rigatoni534.apps.PastaPlayer.data.netease.NeteaseStreamProxy
-import rigatoni534.apps.md3.Md3PaletteStyle
-import rigatoni534.apps.md3.Md3ColorAccuracy
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreferencesRepository
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreference
 import rigatoni534.apps.PastaPlayer.data.qqmusic.QqMusicStreamProxy
@@ -543,10 +543,10 @@ class PhoneDirectWatchTransferCoordinator @Inject constructor(
 
         val artUriString = song.albumArtUriString?.takeIf { it.isNotBlank() }
         if (artUriString != null) {
-            val paletteStyle = Md3PaletteStyle.fromStorageKey(
+            val paletteStyle = AlbumArtPaletteStyle.fromStorageKey(
                 themePreferencesRepository.albumArtPaletteStyleFlow.first().storageKey
             )
-            val colorAccuracyLevel = Md3ColorAccuracy.clamp(
+            val colorAccuracyLevel = AlbumArtColorAccuracy.clamp(
                 themePreferencesRepository.albumArtColorAccuracyFlow.first()
             )
             val schemePair = colorSchemeProcessor.getOrGenerateColorScheme(

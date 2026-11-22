@@ -73,7 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import rigatoni534.apps.PastaPlayer.R
-import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayTheme
 import dagger.hilt.android.AndroidEntryPoint
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape

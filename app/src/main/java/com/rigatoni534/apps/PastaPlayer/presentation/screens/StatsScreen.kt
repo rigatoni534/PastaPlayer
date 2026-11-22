@@ -132,7 +132,7 @@ import androidx.compose.material.icons.outlined.Album
 import rigatoni534.apps.PastaPlayer.utils.shapes.RoundedStarShape
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.PlayCircleOutline
-import rigatoni534.apps.md3.ExpTitleTypography
+import rigatoni534.apps.PastaPlayer.ui.theme.ExpTitleTypography
 
 private const val PULL_TO_REFRESH_MIN_DURATION_MS = 3500L
 

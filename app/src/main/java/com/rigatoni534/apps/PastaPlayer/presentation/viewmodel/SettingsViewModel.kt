@@ -24,8 +24,8 @@ import rigatoni534.apps.PastaPlayer.data.database.AiUsageDao
 import rigatoni534.apps.PastaPlayer.data.database.AiUsageEntity
 import rigatoni534.apps.PastaPlayer.data.preferences.AiPreferencesRepository
 import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtQuality
-import rigatoni534.apps.md3.Md3ColorAccuracy
-import rigatoni534.apps.md3.Md3PaletteStyle
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import rigatoni534.apps.PastaPlayer.data.preferences.AppLanguage
 import rigatoni534.apps.PastaPlayer.data.preferences.CollagePattern
 import rigatoni534.apps.PastaPlayer.data.preferences.NotificationButton
@@ -56,7 +56,6 @@ import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.data.service.player.HiFiCapabilityChecker
 import rigatoni534.apps.PastaPlayer.utils.AppLocaleManager
 import java.io.File
-import rigatoni534.apps.md3.ColorSchemePair
 
 data class SettingsUiState(
     val isLoadingDirectories: Boolean = false,
@@ -65,8 +64,8 @@ data class SettingsUiState(
     val appThemePreset: AppThemePreset = AppThemePreset.default,
     val customThemeColors: CustomThemeColors = CustomThemeColors(),
     val playerThemePreference: String = ThemePreference.ALBUM_ART,
-    val albumArtPaletteStyle: Md3PaletteStyle = Md3PaletteStyle.default,
-    val albumArtColorAccuracy: Int = Md3ColorAccuracy.DEFAULT,
+    val albumArtPaletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.default,
+    val albumArtColorAccuracy: Int = AlbumArtColorAccuracy.DEFAULT,
     val mockGenresEnabled: Boolean = false,
     val navBarCornerRadius: Int = 32,
     val navBarStyle: String = NavBarStyle.DEFAULT,
@@ -152,7 +151,7 @@ private sealed interface SettingsUiUpdate {
         val appThemePreset: AppThemePreset,
         val customThemeColors: CustomThemeColors,
         val playerThemePreference: String,
-        val albumArtPaletteStyle: Md3PaletteStyle,
+        val albumArtPaletteStyle: AlbumArtPaletteStyle,
         val albumArtColorAccuracy: Int,
         val mockGenresEnabled: Boolean,
         val navBarCornerRadius: Int,
@@ -627,7 +626,7 @@ class SettingsViewModel @Inject constructor(
                     customThemeColors = values[14] as CustomThemeColors,
                     appThemeMode = values[1] as String,
                     playerThemePreference = values[2] as String,
-                    albumArtPaletteStyle = values[3] as Md3PaletteStyle,
+                    albumArtPaletteStyle = values[3] as AlbumArtPaletteStyle,
                     albumArtColorAccuracy = values[4] as Int,
                     mockGenresEnabled = values[5] as Boolean,
                     navBarCornerRadius = values[6] as Int,
@@ -895,14 +894,14 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setAlbumArtPaletteStyle(style: Md3PaletteStyle) {
+    fun setAlbumArtPaletteStyle(style: AlbumArtPaletteStyle) {
         viewModelScope.launch {
             themePreferencesRepository.setAlbumArtPaletteStyle(style)
         }
     }
 
     fun setAlbumArtPaletteSettings(
-        style: Md3PaletteStyle,
+        style: AlbumArtPaletteStyle,
         accuracyLevel: Int
     ) {
         viewModelScope.launch {
@@ -912,7 +911,7 @@ class SettingsViewModel @Inject constructor(
 
     suspend fun getAlbumArtPalettePreview(
         uriString: String,
-        style: Md3PaletteStyle,
+        style: AlbumArtPaletteStyle,
         accuracyLevel: Int
     ): ColorSchemePair? {
         return colorSchemeProcessor.getPreviewColorScheme(

@@ -73,9 +73,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
-import rigatoni534.apps.md3.LocalMd3DarkTheme
-import rigatoni534.apps.md3.GoogleSansRounded
-import rigatoni534.apps.md3.Md3StatusBarStyle
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayStatusBarStyle
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
@@ -88,7 +88,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Album
 import rigatoni534.apps.PastaPlayer.presentation.components.CollapsibleCommonTopBar
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveScrollBar
-import rigatoni534.apps.md3.LocalMd3ShowScrollbar
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
 import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImage
@@ -127,7 +127,7 @@ fun AlbumDetailScreen(
     val systemNavBarInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val bottomBarHeightDp = resolveNavBarOccupiedHeight(systemNavBarInset, navBarCompactMode)
     var showPlaylistBottomSheet by remember { mutableStateOf(false) }
-    val isDarkTheme = LocalMd3DarkTheme.current
+    val isDarkTheme = LocalPastaPlayDarkTheme.current
     val baseColorScheme = MaterialTheme.colorScheme
     val albumArtUri = uiState.album?.albumArtUriString?.takeIf { it.isNotBlank() }
     val albumColorSchemeFlow = remember(albumArtUri) {
@@ -290,7 +290,7 @@ fun AlbumDetailScreen(
                 ) {
                     val currentTopBarHeightDp = with(density) { topBarHeight.value.toDp() }
                     val showScrollBar =
-                        LocalMd3ShowScrollbar.current &&
+                        LocalShowScrollbar.current &&
                         collapseFraction > 0.95f &&
                             (lazyListState.canScrollForward || lazyListState.canScrollBackward)
 
@@ -510,7 +510,7 @@ private fun SharedAlbumTopBarProbe(
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surface
     val statusBarColor =
-        if (LocalMd3DarkTheme.current) Color.Black.copy(alpha = 0.6f)
+        if (LocalPastaPlayDarkTheme.current) Color.Black.copy(alpha = 0.6f)
         else Color.White.copy(alpha = 0.4f)
     val solidAlpha = (collapseFraction * 2f).coerceIn(0f, 1f)
     val expandedContentAlpha = 1f - solidAlpha
@@ -536,7 +536,7 @@ private fun SharedAlbumTopBarProbe(
     val titleVerticalBias = lerp(1f, -1f, collapseFraction)
     val shuffleAlignment = BiasAlignment(horizontalBias = 1f, verticalBias = titleVerticalBias)
 
-    Md3StatusBarStyle(color = fallbackStatusBarColor)
+    PastaPlayStatusBarStyle(color = fallbackStatusBarColor)
 
     Box(
         modifier = Modifier
@@ -631,7 +631,7 @@ private fun CollapsingAlbumTopBar(
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surface
     val statusBarColor =
-        if (LocalMd3DarkTheme.current) Color.Black.copy(alpha = 0.6f) else Color.White.copy(
+        if (LocalPastaPlayDarkTheme.current) Color.Black.copy(alpha = 0.6f) else Color.White.copy(
             alpha = 0.4f
         )
 
@@ -682,7 +682,7 @@ private fun CollapsingAlbumTopBar(
             .height(headerHeight)
             .clipToBounds()
     ) {
-        Md3StatusBarStyle(color = fallbackStatusBarColor)
+        PastaPlayStatusBarStyle(color = fallbackStatusBarColor)
 
         Box(
             modifier = Modifier

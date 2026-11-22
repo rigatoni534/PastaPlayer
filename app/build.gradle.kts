@@ -345,7 +345,6 @@ dependencies {
     }
 
     // Projects
-    implementation(project(":md3"))
     implementation(project(":shared"))
 
     // Testing (Unit)

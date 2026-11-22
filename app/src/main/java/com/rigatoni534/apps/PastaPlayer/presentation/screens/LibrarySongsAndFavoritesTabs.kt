@@ -58,7 +58,7 @@ import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.data.model.SortOption
 import rigatoni534.apps.PastaPlayer.data.model.StorageFilter
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveScrollBar
-import rigatoni534.apps.md3.LocalMd3ShowScrollbar
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
 import rigatoni534.apps.PastaPlayer.presentation.components.songFastScrollLabel
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.EnhancedSongListItem
@@ -226,7 +226,7 @@ fun LibraryFavoritesTab(
                     LazyColumn(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
-                            .padding(start = 12.dp, end = if (LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
+                            .padding(start = 12.dp, end = if (LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
                             .clip(
                                 RoundedCornerShape(
                                     topStart = 26.dp,
@@ -312,7 +312,7 @@ fun LibrarySongsTabPaginated(
         paginatedSongs.loadState.refresh is LoadState.Loading && paginatedSongs.itemCount == 0 -> {
             LazyColumn(
                 modifier = Modifier
-                    .padding(start = 12.dp, end = if (LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
+                    .padding(start = 12.dp, end = if (LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
                     .clip(
                         RoundedCornerShape(
                             topStart = 26.dp,
@@ -409,7 +409,7 @@ fun LibrarySongsTabPaginated(
                         val activeListState = if (paginatedSongs.itemCount > 0) listState else dummyListState
                         LazyColumn(
                             modifier = Modifier
-                                .padding(start = 12.dp, end = if (LocalMd3ShowScrollbar.current && (activeListState.canScrollForward || activeListState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
+                                .padding(start = 12.dp, end = if (LocalShowScrollbar.current && (activeListState.canScrollForward || activeListState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
                                 .clip(
                                     RoundedCornerShape(
                                         topStart = 26.dp,

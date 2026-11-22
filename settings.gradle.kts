@@ -32,7 +32,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "PastaPlay"
 include(":app")
-include(":md3")
 include(":shared")
 include(":wear")
 include(":baselineprofile")

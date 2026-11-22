@@ -13,7 +13,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import rigatoni534.apps.PastaPlayer.R
-import rigatoni534.apps.md3.LocalMd3DarkTheme
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
 
 /**
  * Infla un vector XML que depende de attrs del tema Android usando el modo
@@ -25,7 +25,7 @@ fun MaterialYouVectorDrawable(
     @DrawableRes drawableResId: Int
 ) {
     val context = LocalContext.current
-    val isDarkTheme = LocalMd3DarkTheme.current
+    val isDarkTheme = LocalPastaPlayDarkTheme.current
     val themedContext = remember(context, isDarkTheme) {
         context.createVectorThemedContext(isDarkTheme = isDarkTheme)
     }

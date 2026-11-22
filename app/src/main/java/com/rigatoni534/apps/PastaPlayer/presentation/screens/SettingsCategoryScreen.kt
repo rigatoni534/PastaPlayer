@@ -178,7 +178,7 @@ import rigatoni534.apps.PastaPlayer.presentation.navigation.Screen
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.LyricsRefreshProgress
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SettingsViewModel
-import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)

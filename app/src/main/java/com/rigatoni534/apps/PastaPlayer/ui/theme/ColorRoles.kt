@@ -1,4 +1,4 @@
-package rigatoni534.apps.md3
+package rigatoni534.apps.PastaPlayer.ui.theme
 
 import android.graphics.Bitmap
 import android.util.LruCache
@@ -6,6 +6,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.ColorUtils
+import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemePair
 import com.google.android.material.color.utilities.DynamicScheme
 import com.google.android.material.color.utilities.Hct
 import com.google.android.material.color.utilities.MathUtils
@@ -15,6 +16,8 @@ import com.google.android.material.color.utilities.SchemeFruitSalad
 import com.google.android.material.color.utilities.SchemeMonochrome
 import com.google.android.material.color.utilities.SchemeTonalSpot
 import com.google.android.material.color.utilities.SchemeVibrant
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import androidx.core.graphics.scale
 import kotlin.math.abs
 import kotlin.math.floor
@@ -37,10 +40,10 @@ data class ColorExtractionConfig(
     val downscaleMaxDimension: Int = 128,
     val quantizerMaxColors: Int = 128,
     val scoring: ColorScoringConfig = ColorScoringConfig(),
-    val accuracyLevel: Int = Md3ColorAccuracy.DEFAULT
+    val accuracyLevel: Int = AlbumArtColorAccuracy.DEFAULT
 ) {
     val normalizedAccuracy: Double
-        get() = Md3ColorAccuracy.clamp(accuracyLevel).toDouble() / Md3ColorAccuracy.MAX.toDouble()
+        get() = AlbumArtColorAccuracy.clamp(accuracyLevel).toDouble() / AlbumArtColorAccuracy.MAX.toDouble()
 }
 
 private data class ScoredHct(
@@ -120,7 +123,7 @@ fun extractSeedColor(
         )
 
         Color(selectSeedColorArgbFromPixels(pixels, config))
-    }.getOrElse { Md3DarkColorScheme.primary }
+    }.getOrElse { DarkColorScheme.primary }
 
     extractedColorCache.put(cacheKey, seedColor)
     if (workingBitmap !== bitmap) {
@@ -131,7 +134,7 @@ fun extractSeedColor(
 
 fun generateColorSchemeFromSeed(
     seedColor: Color,
-    paletteStyle: Md3PaletteStyle = Md3PaletteStyle.default
+    paletteStyle: AlbumArtPaletteStyle = AlbumArtPaletteStyle.default
 ): ColorSchemePair {
     return runCatching {
         val seedArgb = seedColor.toArgb()
@@ -157,7 +160,7 @@ fun generateColorSchemeFromSeed(
             ColorSchemePair(lightScheme, darkScheme)
         }
     }.getOrElse {
-        ColorSchemePair(Md3LightColorScheme, Md3DarkColorScheme)
+        ColorSchemePair(LightColorScheme, DarkColorScheme)
     }
 }
 
@@ -169,7 +172,7 @@ fun generateMonochromeColorSchemeFromSeed(seedColor: Color): ColorSchemePair {
             dark = SchemeMonochrome(sourceHct, true, 0.0).toComposeColorScheme()
         )
     }.getOrElse {
-        ColorSchemePair(Md3LightColorScheme, Md3DarkColorScheme)
+        ColorSchemePair(LightColorScheme, DarkColorScheme)
     }
 }
 
@@ -528,19 +531,19 @@ private fun lerpFloat(start: Float, stop: Float, fraction: Float): Float {
 
 private fun createDynamicScheme(
     sourceHct: Hct,
-    paletteStyle: Md3PaletteStyle,
+    paletteStyle: AlbumArtPaletteStyle,
     isDark: Boolean
 ): DynamicScheme {
     return when (paletteStyle) {
-        Md3PaletteStyle.TONAL_SPOT -> SchemeTonalSpot(sourceHct, isDark, 0.0)
-        Md3PaletteStyle.VIBRANT -> SchemeVibrant(sourceHct, isDark, 0.0)
-        Md3PaletteStyle.EXPRESSIVE -> SchemeExpressive(sourceHct, isDark, 0.0)
-        Md3PaletteStyle.FRUIT_SALAD -> SchemeFruitSalad(sourceHct, isDark, 0.0)
+        AlbumArtPaletteStyle.TONAL_SPOT -> SchemeTonalSpot(sourceHct, isDark, 0.0)
+        AlbumArtPaletteStyle.VIBRANT -> SchemeVibrant(sourceHct, isDark, 0.0)
+        AlbumArtPaletteStyle.EXPRESSIVE -> SchemeExpressive(sourceHct, isDark, 0.0)
+        AlbumArtPaletteStyle.FRUIT_SALAD -> SchemeFruitSalad(sourceHct, isDark, 0.0)
     }
 }
 
 private fun averageColorArgb(pixels: IntArray): Int {
-    if (pixels.isEmpty()) return Md3DarkColorScheme.primary.toArgb()
+    if (pixels.isEmpty()) return DarkColorScheme.primary.toArgb()
 
     var totalRed = 0L
     var totalGreen = 0L

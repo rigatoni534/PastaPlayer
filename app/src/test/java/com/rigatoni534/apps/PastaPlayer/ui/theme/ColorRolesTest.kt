@@ -1,4 +1,4 @@
-package rigatoni534.apps.md3
+package rigatoni534.apps.PastaPlayer.ui.theme
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
@@ -11,6 +11,8 @@ import com.google.android.material.color.utilities.SchemeFruitSalad
 import com.google.android.material.color.utilities.SchemeTonalSpot
 import com.google.android.material.color.utilities.SchemeVibrant
 import com.google.common.truth.Truth.assertThat
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import org.junit.Test
 
 class ColorRolesTest {
@@ -19,7 +21,7 @@ class ColorRolesTest {
     fun generateColorSchemeFromSeed_autoNeutralOutputIsPureGrayscale() {
         val seed = Color(0xFF7F7F7F)
 
-        Md3PaletteStyle.entries.forEach { style ->
+        AlbumArtPaletteStyle.entries.forEach { style ->
             val actual = generateColorSchemeFromSeed(seed, style)
             val nonGrayscaleLight = actual.light.toArgbList().filterNot(::isGrayscaleArgb)
             val nonGrayscaleDark = actual.dark.toArgbList().filterNot(::isGrayscaleArgb)
@@ -34,7 +36,7 @@ class ColorRolesTest {
         val seed = Color(0xFF556B2F)
         val sourceHct = Hct.fromInt(seed.toArgb())
 
-        Md3PaletteStyle.entries.forEach { style ->
+        AlbumArtPaletteStyle.entries.forEach { style ->
             val actual = generateColorSchemeFromSeed(seed, style)
 
             assertThat(actual.light.toArgbList())
@@ -105,7 +107,7 @@ class ColorRolesTest {
         val defaultSeed = selectSeedColorArgbFromPixels(pixels)
         val accuracyZeroSeed = selectSeedColorArgbFromPixels(
             pixels = pixels,
-            config = ColorExtractionConfig(accuracyLevel = Md3ColorAccuracy.DEFAULT)
+            config = ColorExtractionConfig(accuracyLevel = AlbumArtColorAccuracy.DEFAULT)
         )
 
         assertThat(accuracyZeroSeed).isEqualTo(defaultSeed)
@@ -124,7 +126,7 @@ class ColorRolesTest {
 
         val accurateSeed = selectSeedColorArgbFromPixels(
             pixels = pixels,
-            config = ColorExtractionConfig(accuracyLevel = Md3ColorAccuracy.MAX)
+            config = ColorExtractionConfig(accuracyLevel = AlbumArtColorAccuracy.MAX)
         )
 
         assertThat(hueDistance(accurateSeed, dominantYellow))
@@ -144,7 +146,7 @@ class ColorRolesTest {
 
         val accurateSeed = selectSeedColorArgbFromPixels(
             pixels = pixels,
-            config = ColorExtractionConfig(accuracyLevel = Md3ColorAccuracy.MAX)
+            config = ColorExtractionConfig(accuracyLevel = AlbumArtColorAccuracy.MAX)
         )
 
         assertThat(hueDistance(accurateSeed, dominantBlue))
@@ -152,15 +154,15 @@ class ColorRolesTest {
     }
 
     private fun expectedScheme(
-        style: Md3PaletteStyle,
+        style: AlbumArtPaletteStyle,
         sourceHct: Hct,
         isDark: Boolean
     ): DynamicScheme {
         return when (style) {
-            Md3PaletteStyle.TONAL_SPOT -> SchemeTonalSpot(sourceHct, isDark, 0.0)
-            Md3PaletteStyle.VIBRANT -> SchemeVibrant(sourceHct, isDark, 0.0)
-            Md3PaletteStyle.EXPRESSIVE -> SchemeExpressive(sourceHct, isDark, 0.0)
-            Md3PaletteStyle.FRUIT_SALAD -> SchemeFruitSalad(sourceHct, isDark, 0.0)
+            AlbumArtPaletteStyle.TONAL_SPOT -> SchemeTonalSpot(sourceHct, isDark, 0.0)
+            AlbumArtPaletteStyle.VIBRANT -> SchemeVibrant(sourceHct, isDark, 0.0)
+            AlbumArtPaletteStyle.EXPRESSIVE -> SchemeExpressive(sourceHct, isDark, 0.0)
+            AlbumArtPaletteStyle.FRUIT_SALAD -> SchemeFruitSalad(sourceHct, isDark, 0.0)
         }
     }
 

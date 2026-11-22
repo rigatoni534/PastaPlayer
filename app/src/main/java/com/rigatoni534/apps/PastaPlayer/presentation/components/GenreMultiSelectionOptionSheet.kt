@@ -51,8 +51,8 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Genre
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.AutoSizingTextToFill
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.TightWrapText
-import rigatoni534.apps.md3.GoogleSansRounded
-import rigatoni534.apps.md3.LocalMd3DarkTheme
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -263,7 +263,7 @@ private fun StackedGenrePreviews(
     val overlap = 30.dp
     val borderWidth = 3.dp
     val borderColor = MaterialTheme.colorScheme.surfaceContainerLow
-    val isDark = LocalMd3DarkTheme.current
+    val isDark = LocalPastaPlayDarkTheme.current
 
     val numGenres = genres.size
     val totalWidth = if (numGenres == 0) 0.dp else imageSize + (imageSize - overlap) * (numGenres - 1)

@@ -87,7 +87,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.scoped.rememberSheet
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerSheetState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.StablePlayerState
-import rigatoni534.apps.md3.LocalMd3DarkTheme
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -539,7 +539,7 @@ fun UnifiedPlayerSheetV2(
 
     val activePlayerSchemePair by playerViewModel.activePlayerColorSchemePair.collectAsStateWithLifecycle()
     val themedAlbumArtUri by playerViewModel.currentThemedAlbumArtUri.collectAsStateWithLifecycle()
-    val isDarkTheme = LocalMd3DarkTheme.current
+    val isDarkTheme = LocalPastaPlayDarkTheme.current
     val currentSong = infrequentPlayerState.currentSong
     val sheetThemeState = rememberSheetThemeState(
         activePlayerSchemePair = activePlayerSchemePair,

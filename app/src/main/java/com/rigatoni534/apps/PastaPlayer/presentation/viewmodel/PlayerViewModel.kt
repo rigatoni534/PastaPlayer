@@ -54,7 +54,7 @@ import rigatoni534.apps.PastaPlayer.data.preferences.LibraryNavigationMode
 import rigatoni534.apps.PastaPlayer.data.preferences.NavBarStyle
 import rigatoni534.apps.PastaPlayer.data.preferences.FullPlayerLoadingTweaks
 import rigatoni534.apps.PastaPlayer.data.preferences.AiPreferencesRepository
-import rigatoni534.apps.md3.Md3PaletteStyle
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreferencesRepository
 import rigatoni534.apps.PastaPlayer.data.preferences.UserPreferencesRepository
 import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtQuality
@@ -117,7 +117,6 @@ import androidx.paging.cachedIn
 import coil.imageLoader
 import coil.memory.MemoryCache
 import dagger.Lazy
-import rigatoni534.apps.md3.ColorSchemePair
 
 private const val CAST_LOG_TAG = "PlayerCastTransfer"
 private const val UpNextRevealWindowMs = 30_000L
@@ -252,12 +251,12 @@ class PlayerViewModel @Inject constructor(
     val showNoInternetDialog: SharedFlow<Unit> = _showNoInternetDialog.asSharedFlow()
 
     val stablePlayerState: StateFlow<StablePlayerState> = playbackStateHolder.stablePlayerState
-    val albumArtPaletteStyle: StateFlow<Md3PaletteStyle> = themePreferencesRepository
+    val albumArtPaletteStyle: StateFlow<AlbumArtPaletteStyle> = themePreferencesRepository
         .albumArtPaletteStyleFlow
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = Md3PaletteStyle.default
+            initialValue = AlbumArtPaletteStyle.default
         )
     /**
      * High-frequency playback position should not force global UI recomposition.

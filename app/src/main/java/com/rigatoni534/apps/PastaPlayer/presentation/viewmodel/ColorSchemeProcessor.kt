@@ -13,16 +13,16 @@ import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.size.Size
-import rigatoni534.apps.md3.Md3ColorAccuracy
-import rigatoni534.apps.md3.Md3PaletteStyle
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
+import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
 import rigatoni534.apps.PastaPlayer.data.database.AlbumArtThemeDao
 import rigatoni534.apps.PastaPlayer.data.database.AlbumArtThemeEntity
 import rigatoni534.apps.PastaPlayer.data.database.StoredColorSchemeValues
 import rigatoni534.apps.PastaPlayer.data.database.toComposeColor
 import rigatoni534.apps.PastaPlayer.utils.LocalArtworkUri
-import rigatoni534.apps.md3.clearExtractedColorCache
-import rigatoni534.apps.md3.extractSeedColor
-import rigatoni534.apps.md3.generateColorSchemeFromSeed
+import rigatoni534.apps.PastaPlayer.ui.theme.clearExtractedColorCache
+import rigatoni534.apps.PastaPlayer.ui.theme.extractSeedColor
+import rigatoni534.apps.PastaPlayer.ui.theme.generateColorSchemeFromSeed
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -31,7 +31,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import rigatoni534.apps.md3.ColorSchemePair
 
 /**
  * Efficient color scheme processor for album art.
@@ -74,13 +73,13 @@ class ColorSchemeProcessor @Inject constructor(
      */
     suspend fun getOrGenerateColorScheme(
         albumArtUri: String,
-        paletteStyle: Md3PaletteStyle,
-        colorAccuracyLevel: Int = Md3ColorAccuracy.DEFAULT,
+        paletteStyle: AlbumArtPaletteStyle,
+        colorAccuracyLevel: Int = AlbumArtColorAccuracy.DEFAULT,
         forceRefresh: Boolean = false
     ): ColorSchemePair? {
         Trace.beginSection("ColorSchemeProcessor.getOrGenerate")
         try {
-            val resolvedAccuracyLevel = Md3ColorAccuracy.clamp(colorAccuracyLevel)
+            val resolvedAccuracyLevel = AlbumArtColorAccuracy.clamp(colorAccuracyLevel)
             val cacheKey = buildCacheKey(albumArtUri, paletteStyle, resolvedAccuracyLevel)
             if (!forceRefresh) {
                 loadCachedColorScheme(
@@ -107,10 +106,10 @@ class ColorSchemeProcessor @Inject constructor(
 
     suspend fun getPreviewColorScheme(
         albumArtUri: String,
-        paletteStyle: Md3PaletteStyle,
-        colorAccuracyLevel: Int = Md3ColorAccuracy.DEFAULT
+        paletteStyle: AlbumArtPaletteStyle,
+        colorAccuracyLevel: Int = AlbumArtColorAccuracy.DEFAULT
     ): ColorSchemePair? {
-        val resolvedAccuracyLevel = Md3ColorAccuracy.clamp(colorAccuracyLevel)
+        val resolvedAccuracyLevel = AlbumArtColorAccuracy.clamp(colorAccuracyLevel)
         return loadCachedColorScheme(
             albumArtUri = albumArtUri,
             paletteStyle = paletteStyle,
@@ -129,7 +128,7 @@ class ColorSchemeProcessor @Inject constructor(
      */
     private suspend fun generateAndCacheColorScheme(
         albumArtUri: String,
-        paletteStyle: Md3PaletteStyle,
+        paletteStyle: AlbumArtPaletteStyle,
         colorAccuracyLevel: Int,
         persistToDatabase: Boolean = true,
         forceRefresh: Boolean = false
@@ -146,7 +145,7 @@ class ColorSchemeProcessor @Inject constructor(
             val schemePair = withContext(Dispatchers.Default) {
                 val seed = extractSeedColor(
                     bitmap = bitmap,
-                    config = rigatoni534.apps.md3.ColorExtractionConfig(
+                    config = rigatoni534.apps.PastaPlayer.ui.theme.ColorExtractionConfig(
                         accuracyLevel = colorAccuracyLevel
                     )
                 )
@@ -277,7 +276,7 @@ class ColorSchemeProcessor @Inject constructor(
     // Mapping functions
     private fun mapColorSchemePairToEntity(
         uri: String,
-        paletteStyle: Md3PaletteStyle,
+        paletteStyle: AlbumArtPaletteStyle,
         colorAccuracyLevel: Int,
         pair: ColorSchemePair
     ): AlbumArtThemeEntity {
@@ -402,21 +401,21 @@ class ColorSchemeProcessor @Inject constructor(
 
     private fun buildCacheKey(
         uri: String,
-        paletteStyle: Md3PaletteStyle,
+        paletteStyle: AlbumArtPaletteStyle,
         colorAccuracyLevel: Int
     ): String {
         return "$uri$CACHE_KEY_SEPARATOR${paletteStyleCacheKey(paletteStyle, colorAccuracyLevel)}"
     }
 
     private fun paletteStyleCacheKey(
-        paletteStyle: Md3PaletteStyle,
+        paletteStyle: AlbumArtPaletteStyle,
         colorAccuracyLevel: Int
     ): String {
         return buildString {
             append(paletteStyle.storageKey)
             append(CACHE_KEY_SEPARATOR)
             append("accuracy_")
-            append(Md3ColorAccuracy.clamp(colorAccuracyLevel))
+            append(AlbumArtColorAccuracy.clamp(colorAccuracyLevel))
             append(CACHE_KEY_SEPARATOR)
             append(CACHE_ALGORITHM_VERSION)
         }
@@ -424,7 +423,7 @@ class ColorSchemeProcessor @Inject constructor(
 
     private suspend fun loadCachedColorScheme(
         albumArtUri: String,
-        paletteStyle: Md3PaletteStyle,
+        paletteStyle: AlbumArtPaletteStyle,
         colorAccuracyLevel: Int
     ): ColorSchemePair? {
         val cacheKey = buildCacheKey(albumArtUri, paletteStyle, colorAccuracyLevel)

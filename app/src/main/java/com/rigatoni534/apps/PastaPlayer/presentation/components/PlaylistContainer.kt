@@ -83,8 +83,8 @@ import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistUiState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistSelectionStateHolder
 import rigatoni534.apps.PastaPlayer.utils.formatSongCount
-import rigatoni534.apps.md3.GoogleSansRounded
-import rigatoni534.apps.md3.LocalMd3ShowScrollbar
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
 import androidx.compose.ui.text.style.TextAlign
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -281,7 +281,7 @@ fun PlaylistItems(
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier
-                .padding(start = 12.dp, end = if (LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
+                .padding(start = 12.dp, end = if (LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
                 .fillMaxSize()
                 .clip(
                     RoundedCornerShape(

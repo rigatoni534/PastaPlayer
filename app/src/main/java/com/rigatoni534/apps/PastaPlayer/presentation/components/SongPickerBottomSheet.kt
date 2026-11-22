@@ -89,9 +89,9 @@ import rigatoni534.apps.PastaPlayer.data.model.LibraryTabId
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.presentation.screens.TabAnimation
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
-import rigatoni534.apps.md3.GoogleSansRounded
-import rigatoni534.apps.md3.LocalMd3ShowScrollbar
-import rigatoni534.apps.md3.ShapeCache
+import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.PastaPlayer.ui.theme.ShapeCache
 import kotlinx.coroutines.flow.map
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 
@@ -534,7 +534,7 @@ fun SongPickerPagingList(
                         bottom = contentPadding.calculateBottomPadding(),
                         top = contentPadding.calculateTopPadding(),
                         start = contentPadding.calculateLeftPadding(LayoutDirection.Ltr),
-                        end = if (LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 12.dp else 0.dp
+                        end = if (LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 12.dp else 0.dp
                     ),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -855,7 +855,7 @@ fun SongPickerList(
                     bottom = contentPadding.calculateBottomPadding(),
                     top = contentPadding.calculateTopPadding(),
                     start = contentPadding.calculateLeftPadding(LayoutDirection.Ltr),
-                    end = if (LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 12.dp else 0.dp
+                    end = if (LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 12.dp else 0.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
