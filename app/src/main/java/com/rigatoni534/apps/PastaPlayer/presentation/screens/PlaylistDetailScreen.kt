@@ -121,7 +121,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.QueuePlaylistSongItem
 import rigatoni534.apps.PastaPlayer.presentation.components.SongPickerBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveScrollBar
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.md3.LocalMd3ShowScrollbar
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImage
 import rigatoni534.apps.PastaPlayer.presentation.components.SongInfoBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.resolveNavBarOccupiedHeight
@@ -132,7 +132,7 @@ import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistViewModel.Companion.FOLDER_PLAYLIST_PREFIX
 import rigatoni534.apps.PastaPlayer.presentation.utils.LocalAppHapticsConfig
 import rigatoni534.apps.PastaPlayer.presentation.utils.performAppCompatHapticFeedback
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistSongsOrderMode
 import rigatoni534.apps.PastaPlayer.utils.formatSongCount
 import rigatoni534.apps.PastaPlayer.utils.formatTotalDuration
@@ -732,7 +732,7 @@ fun PlaylistDetailScreen(
                                 bottom = MiniPlayerHeight + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 16.dp,
                                 end = 0.dp
                             ).let {
-                                val showScrollBar = LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)
+                                val showScrollBar = LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)
                                 PaddingValues(
                                     top = it.calculateTopPadding(),
                                     bottom = it.calculateBottomPadding(),

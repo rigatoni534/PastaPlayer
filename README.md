@@ -182,9 +182,18 @@ app/src/main/java/rigatoni534/apps/PastaPlayer/
 │   └── viewmodel/      # ViewModels
 ├── ui/
 │   ├── glancewidget/   # Home screen widgets
-│   └── theme/          # Colors, typography, theming
+│   └── theme/          # App-specific theming (presets, genre colours)
 └── utils/              # Extensions and utilities
+
+md3/                    # Reusable Material 3 design system library (:md3)
 ```
+
+### 🎨 Design system library
+
+The Material 3 design system used by the app lives in its own `:md3` Gradle module so other
+apps can reuse it: theme entry point, palette generation from a seed colour or from artwork,
+typography, shapes and the system-bar helper. See [md3/README.md](md3/README.md) for
+installation and usage.
 
 ---
 

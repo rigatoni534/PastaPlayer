@@ -64,7 +64,7 @@ import rigatoni534.apps.PastaPlayer.R
 import java.net.URLEncoder
 import timber.log.Timber
 import rigatoni534.apps.PastaPlayer.data.model.Song
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

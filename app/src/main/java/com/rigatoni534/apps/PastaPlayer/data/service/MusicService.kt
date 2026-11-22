@@ -73,8 +73,8 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import rigatoni534.apps.PastaPlayer.data.equalizer.EqualizerManager
 import rigatoni534.apps.PastaPlayer.data.model.WidgetThemeColors
-import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
-import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
+import rigatoni534.apps.md3.Md3ColorAccuracy
+import rigatoni534.apps.md3.Md3PaletteStyle
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemeProcessor
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -83,7 +83,7 @@ import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreference
 import rigatoni534.apps.PastaPlayer.data.service.auto.AutoMediaBrowseTree
 import rigatoni534.apps.PastaPlayer.data.service.wear.buildWearThemePalette
 import rigatoni534.apps.PastaPlayer.data.service.wear.WearStatePublisher
-import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemePair
+import rigatoni534.apps.md3.ColorSchemePair
 import rigatoni534.apps.PastaPlayer.shared.WearIntents
 import rigatoni534.apps.PastaPlayer.utils.ArtworkTransportSanitizer
 import rigatoni534.apps.PastaPlayer.utils.MediaItemBuilder
@@ -2104,8 +2104,8 @@ class MusicService : MediaLibraryService() {
         val (playerTheme, paletteStyle, colorAccuracyLevel) = withContext(Dispatchers.IO) {
             Triple(
                 themePreferencesRepository.playerThemePreferenceFlow.first(),
-                AlbumArtPaletteStyle.fromStorageKey(themePreferencesRepository.albumArtPaletteStyleFlow.first().storageKey),
-                AlbumArtColorAccuracy.clamp(themePreferencesRepository.albumArtColorAccuracyFlow.first())
+                Md3PaletteStyle.fromStorageKey(themePreferencesRepository.albumArtPaletteStyleFlow.first().storageKey),
+                Md3ColorAccuracy.clamp(themePreferencesRepository.albumArtColorAccuracyFlow.first())
             )
         }
 
@@ -2243,8 +2243,8 @@ class MusicService : MediaLibraryService() {
 
     // Color scheme cache: skip recomputation when art URI, palette style, and accuracy haven't changed
     private var cachedSchemeArtUri: String? = null
-    private var cachedSchemePaletteStyle: AlbumArtPaletteStyle? = null
-    private var cachedSchemeColorAccuracy: Int = AlbumArtColorAccuracy.DEFAULT
+    private var cachedSchemePaletteStyle: Md3PaletteStyle? = null
+    private var cachedSchemeColorAccuracy: Int = Md3ColorAccuracy.DEFAULT
     private var cachedColorSchemePair: ColorSchemePair? = null
     private var cachedWidgetArtSourceKey: String? = null
     private var cachedWidgetArtResolvedUri: String? = null

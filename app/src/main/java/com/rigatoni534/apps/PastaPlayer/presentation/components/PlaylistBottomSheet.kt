@@ -48,7 +48,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.LibraryActi
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistUiState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistViewModel
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)

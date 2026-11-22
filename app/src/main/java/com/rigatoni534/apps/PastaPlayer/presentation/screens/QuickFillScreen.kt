@@ -39,7 +39,7 @@ import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.presentation.components.SongPickerList
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImage
 import rigatoni534.apps.PastaPlayer.presentation.utils.GenreIconProvider
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.compose.ui.res.stringResource
 import rigatoni534.apps.PastaPlayer.R

@@ -74,7 +74,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.ai.GeminiModel
 import rigatoni534.apps.PastaPlayer.data.worker.SyncProgress
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.LyricsRefreshProgress
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.sp
 import androidx.core.view.HapticFeedbackConstantsCompat

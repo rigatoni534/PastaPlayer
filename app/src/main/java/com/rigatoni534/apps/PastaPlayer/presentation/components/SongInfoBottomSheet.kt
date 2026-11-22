@@ -95,14 +95,14 @@ import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import rigatoni534.apps.PastaPlayer.data.media.CoverArtUpdate
-import rigatoni534.apps.PastaPlayer.ui.theme.MontserratFamily
+import rigatoni534.apps.md3.MontserratFamily
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SongInfoBottomSheetViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SongInfoBottomSheetViewModel.ToneTarget
 import kotlinx.coroutines.launch
 
 import androidx.compose.ui.graphics.TransformOrigin
 import rigatoni534.apps.PastaPlayer.presentation.screens.TabAnimation
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.utils.AudioMetaUtils
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp

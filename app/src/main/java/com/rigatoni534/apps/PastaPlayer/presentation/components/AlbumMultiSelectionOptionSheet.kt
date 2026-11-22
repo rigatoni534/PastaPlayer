@@ -50,7 +50,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Album
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.AutoSizingTextToFill
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.TightWrapText
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable

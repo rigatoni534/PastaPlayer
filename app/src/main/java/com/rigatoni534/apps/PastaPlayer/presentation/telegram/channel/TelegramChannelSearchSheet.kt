@@ -58,7 +58,7 @@ import androidx.compose.ui.res.stringResource
 import rigatoni534.apps.PastaPlayer.R
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import rigatoni534.apps.PastaPlayer.data.model.Song
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import kotlinx.coroutines.delay
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 

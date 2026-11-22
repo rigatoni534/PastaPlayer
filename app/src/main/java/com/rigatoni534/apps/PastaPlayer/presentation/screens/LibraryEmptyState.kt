@@ -26,7 +26,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.LibraryTabId
 import rigatoni534.apps.PastaPlayer.data.model.StorageFilter
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 
 private data class LibraryEmptySpec(
     val iconRes: Int,

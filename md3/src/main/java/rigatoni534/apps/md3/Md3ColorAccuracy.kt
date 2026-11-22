@@ -1,6 +1,6 @@
-package rigatoni534.apps.PastaPlayer.data.preferences
+package rigatoni534.apps.md3
 
-object AlbumArtColorAccuracy {
+object Md3ColorAccuracy {
     const val MIN = 0
     const val MAX = 10
     const val DEFAULT = MIN

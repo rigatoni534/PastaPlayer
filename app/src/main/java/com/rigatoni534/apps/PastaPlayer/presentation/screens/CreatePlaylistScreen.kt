@@ -128,7 +128,7 @@ import rigatoni534.apps.PastaPlayer.data.model.PlaylistShapeType
 import rigatoni534.apps.PastaPlayer.data.model.SmartPlaylistRule
 // import rigatoni534.apps.PastaPlayer.presentation.screens.ShapeType // Removed local enum
 import rigatoni534.apps.PastaPlayer.presentation.components.SongPickerSelectionPane
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import androidx.compose.material3.Slider
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults

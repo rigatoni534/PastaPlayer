@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import rigatoni534.apps.md3.Md3PaletteStyle
+import rigatoni534.apps.md3.Md3ColorAccuracy
 
 @Singleton
 class ThemePreferencesRepository @Inject constructor(
@@ -39,12 +41,12 @@ class ThemePreferencesRepository @Inject constructor(
         CustomThemeColors.fromJson(preferences[Keys.CUSTOM_THEME_COLORS])
     }
 
-    val albumArtPaletteStyleFlow: Flow<AlbumArtPaletteStyle> = dataStore.data.map { preferences ->
-        AlbumArtPaletteStyle.fromStorageKey(preferences[Keys.ALBUM_ART_PALETTE_STYLE])
+    val albumArtPaletteStyleFlow: Flow<Md3PaletteStyle> = dataStore.data.map { preferences ->
+        Md3PaletteStyle.fromStorageKey(preferences[Keys.ALBUM_ART_PALETTE_STYLE])
     }
 
     val albumArtColorAccuracyFlow: Flow<Int> = dataStore.data.map { preferences ->
-        AlbumArtColorAccuracy.clamp(preferences[Keys.ALBUM_ART_COLOR_ACCURACY] ?: AlbumArtColorAccuracy.DEFAULT)
+        Md3ColorAccuracy.clamp(preferences[Keys.ALBUM_ART_COLOR_ACCURACY] ?: Md3ColorAccuracy.DEFAULT)
     }
 
     suspend fun setPlayerThemePreference(themeMode: String) =
@@ -75,21 +77,21 @@ class ThemePreferencesRepository @Inject constructor(
             preferences[Keys.CUSTOM_THEME_COLORS] = current.withColor(role, argb).toJson()
         }
 
-    suspend fun setAlbumArtPaletteStyle(style: AlbumArtPaletteStyle) =
+    suspend fun setAlbumArtPaletteStyle(style: Md3PaletteStyle) =
         dataStore.edit { preferences ->
             preferences[Keys.ALBUM_ART_PALETTE_STYLE] = style.storageKey
         }
 
     suspend fun setAlbumArtColorAccuracy(level: Int) =
         dataStore.edit { preferences ->
-            preferences[Keys.ALBUM_ART_COLOR_ACCURACY] = AlbumArtColorAccuracy.clamp(level)
+            preferences[Keys.ALBUM_ART_COLOR_ACCURACY] = Md3ColorAccuracy.clamp(level)
         }
 
     suspend fun setAlbumArtPaletteSettings(
-        style: AlbumArtPaletteStyle,
+        style: Md3PaletteStyle,
         accuracyLevel: Int
     ) = dataStore.edit { preferences ->
         preferences[Keys.ALBUM_ART_PALETTE_STYLE] = style.storageKey
-        preferences[Keys.ALBUM_ART_COLOR_ACCURACY] = AlbumArtColorAccuracy.clamp(accuracyLevel)
+        preferences[Keys.ALBUM_ART_COLOR_ACCURACY] = Md3ColorAccuracy.clamp(accuracyLevel)
     }
 }

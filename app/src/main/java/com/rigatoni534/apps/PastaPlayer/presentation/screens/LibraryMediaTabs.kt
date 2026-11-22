@@ -60,12 +60,12 @@ import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.data.model.SortOption
 import rigatoni534.apps.PastaPlayer.data.model.StorageFilter
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveScrollBar
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.md3.LocalMd3ShowScrollbar
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
 import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistContainer
 import rigatoni534.apps.PastaPlayer.presentation.components.albumFastScrollLabel
 import rigatoni534.apps.PastaPlayer.presentation.components.artistFastScrollLabel
-import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemePair
+import rigatoni534.apps.md3.ColorSchemePair
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -327,7 +327,7 @@ fun LibraryAlbumsTab(
                             val activeListState = if (albums.itemCount > 0) listState else dummyListState
                             LazyColumn(
                                 modifier = Modifier
-                                    .padding(start = 14.dp, end = if (LocalShowScrollbar.current && (activeListState.canScrollForward || activeListState.canScrollBackward)) 24.dp else 14.dp, bottom = 6.dp)
+                                    .padding(start = 14.dp, end = if (LocalMd3ShowScrollbar.current && (activeListState.canScrollForward || activeListState.canScrollBackward)) 24.dp else 14.dp, bottom = 6.dp)
                                     .clip(
                                         RoundedCornerShape(
                                             topStart = 16.dp,
@@ -395,7 +395,7 @@ fun LibraryAlbumsTab(
                             val activeGridState = if (albums.itemCount > 0) gridState else dummyGridState
                             LazyVerticalGrid(
                                 modifier = Modifier
-                                    .padding(start = 14.dp, end = if (LocalShowScrollbar.current && (activeGridState.canScrollForward || activeGridState.canScrollBackward)) 24.dp else 14.dp, bottom = 6.dp)
+                                    .padding(start = 14.dp, end = if (LocalMd3ShowScrollbar.current && (activeGridState.canScrollForward || activeGridState.canScrollBackward)) 24.dp else 14.dp, bottom = 6.dp)
                                     .clip(
                                         RoundedCornerShape(
                                             topStart = 16.dp,
@@ -610,7 +610,7 @@ fun LibraryArtistsTab(
                         val activeListState = if (artists.itemCount > 0) listState else dummyListState
                         LazyColumn(
                             modifier = Modifier
-                                .padding(start = 12.dp, end = if (LocalShowScrollbar.current && (activeListState.canScrollForward || activeListState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
+                                .padding(start = 12.dp, end = if (LocalMd3ShowScrollbar.current && (activeListState.canScrollForward || activeListState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
                                 .clip(
                                     RoundedCornerShape(
                                         topStart = 26.dp,

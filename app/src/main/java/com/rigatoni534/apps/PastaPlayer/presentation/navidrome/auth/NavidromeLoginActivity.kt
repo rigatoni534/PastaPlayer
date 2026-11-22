@@ -73,7 +73,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import rigatoni534.apps.PastaPlayer.R
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayTheme
 import dagger.hilt.android.AndroidEntryPoint
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape

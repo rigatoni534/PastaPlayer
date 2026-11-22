@@ -36,7 +36,7 @@ import androidx.compose.ui.window.DialogProperties
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.media.CoverArtUpdate
 import rigatoni534.apps.PastaPlayer.data.model.Song
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.compose.ui.graphics.ImageBitmap
 import android.net.Uri

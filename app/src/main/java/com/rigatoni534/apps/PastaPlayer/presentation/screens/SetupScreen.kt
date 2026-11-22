@@ -146,8 +146,8 @@ import rigatoni534.apps.PastaPlayer.presentation.viewmodel.DirectoryEntry
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SetupEvent
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SetupUiState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SetupViewModel
-import rigatoni534.apps.PastaPlayer.ui.theme.ExpTitleTypography
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.ExpTitleTypography
+import rigatoni534.apps.md3.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.utils.StorageInfo
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

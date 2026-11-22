@@ -75,7 +75,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.MusicFolder
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import java.io.File
 import androidx.compose.ui.res.stringResource
 

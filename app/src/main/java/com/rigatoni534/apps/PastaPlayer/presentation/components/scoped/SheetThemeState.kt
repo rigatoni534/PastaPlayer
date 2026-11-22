@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.util.lerp
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.data.preferences.ThemePreference
-import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemePair
+import rigatoni534.apps.md3.ColorSchemePair
 
 /**
  * Theme state for the player sheet.

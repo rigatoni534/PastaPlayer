@@ -37,7 +37,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.database.NavidromePlaylistEntity
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImage
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.utils.formatTimeAgo
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.lifecycle.compose.collectAsStateWithLifecycle

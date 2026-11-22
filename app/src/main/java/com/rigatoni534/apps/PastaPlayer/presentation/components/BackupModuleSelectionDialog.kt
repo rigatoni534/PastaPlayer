@@ -71,7 +71,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.backup.model.BackupSection
 import rigatoni534.apps.PastaPlayer.data.backup.model.ModuleRestoreDetail
 import rigatoni534.apps.PastaPlayer.data.backup.model.RestorePlan
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

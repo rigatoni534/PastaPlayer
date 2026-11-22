@@ -64,7 +64,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.UpNextSong
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 
 internal val LocalMaterialTheme = compositionLocalOf<ColorScheme> { error("No ColorScheme provided") }
 

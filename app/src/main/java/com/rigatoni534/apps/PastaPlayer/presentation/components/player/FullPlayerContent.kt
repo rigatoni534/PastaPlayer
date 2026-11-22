@@ -144,7 +144,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.FetchLyrics
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.LyricsSearchUiState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerSheetState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.utils.AudioMetaUtils.mimeTypeToFormat
 import rigatoni534.apps.PastaPlayer.utils.LyricsImportFailureReason
 import rigatoni534.apps.PastaPlayer.utils.LyricsImportSecurity

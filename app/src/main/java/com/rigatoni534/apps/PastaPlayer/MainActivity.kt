@@ -146,7 +146,7 @@ import rigatoni534.apps.PastaPlayer.presentation.viewmodel.MainViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.ui.theme.AppThemes
 import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayTheme
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.md3.LocalMd3ShowScrollbar
 import rigatoni534.apps.PastaPlayer.utils.CrashHandler
 import rigatoni534.apps.PastaPlayer.utils.AppLocaleManager
 import rigatoni534.apps.PastaPlayer.utils.LogUtils
@@ -306,7 +306,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            CompositionLocalProvider(LocalShowScrollbar provides showScrollbar) {
+            CompositionLocalProvider(LocalMd3ShowScrollbar provides showScrollbar) {
                 PastaPlayTheme(
                     darkTheme = useDarkTheme,
                     colorSchemePairOverride = appColorSchemePair

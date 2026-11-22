@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.core.graphics.ColorUtils
 import rigatoni534.apps.PastaPlayer.data.preferences.AppThemePreset
 import rigatoni534.apps.PastaPlayer.data.preferences.CustomThemeColors
-import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemePair
+import rigatoni534.apps.md3.ColorSchemePair
 
 /**
  * Builds the app-wide Material 3 color schemes for the themes picked in Settings.

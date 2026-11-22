@@ -33,7 +33,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import rigatoni534.apps.PastaPlayer.data.database.QqMusicPlaylistEntity
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImage
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.compose.ui.res.stringResource
 import rigatoni534.apps.PastaPlayer.R

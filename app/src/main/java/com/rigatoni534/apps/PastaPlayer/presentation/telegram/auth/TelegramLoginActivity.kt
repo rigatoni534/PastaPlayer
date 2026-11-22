@@ -106,7 +106,7 @@ import rigatoni534.apps.PastaPlayer.MainActivity
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.presentation.telegram.channel.TelegramChannelSearchSheet
 import rigatoni534.apps.PastaPlayer.presentation.telegram.dashboard.TelegramDashboardScreen
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayTheme
 import dagger.hilt.android.AndroidEntryPoint
 import org.drinkless.tdlib.TdApi

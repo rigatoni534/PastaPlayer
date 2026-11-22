@@ -96,7 +96,7 @@ import rigatoni534.apps.PastaPlayer.data.database.TelegramChannelEntity
 import rigatoni534.apps.PastaPlayer.data.database.TelegramTopicEntity
 import rigatoni534.apps.PastaPlayer.presentation.components.CollapsibleCommonTopBar
 import rigatoni534.apps.PastaPlayer.presentation.components.NoInternetScreen
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import java.io.File
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch

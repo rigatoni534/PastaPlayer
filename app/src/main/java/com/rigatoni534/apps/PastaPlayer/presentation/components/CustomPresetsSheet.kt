@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.equalizer.EqualizerPreset
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

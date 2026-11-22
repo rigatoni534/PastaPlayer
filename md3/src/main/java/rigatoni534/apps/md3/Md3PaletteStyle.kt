@@ -1,6 +1,6 @@
-package rigatoni534.apps.PastaPlayer.data.preferences
+package rigatoni534.apps.md3
 
-enum class AlbumArtPaletteStyle(
+enum class Md3PaletteStyle(
     val storageKey: String,
     val label: String
 ) {
@@ -10,9 +10,9 @@ enum class AlbumArtPaletteStyle(
     FRUIT_SALAD("fruit_salad", "Fruit Salad");
 
     companion object {
-        val default: AlbumArtPaletteStyle = TONAL_SPOT
+        val default: Md3PaletteStyle = TONAL_SPOT
 
-        fun fromStorageKey(value: String?): AlbumArtPaletteStyle {
+        fun fromStorageKey(value: String?): Md3PaletteStyle {
             return entries.firstOrNull { it.storageKey == value } ?: default
         }
     }

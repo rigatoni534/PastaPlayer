@@ -152,8 +152,8 @@ import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SettingsViewModel
 import rigatoni534.apps.PastaPlayer.presentation.utils.LocalAppHapticsConfig
 import rigatoni534.apps.PastaPlayer.presentation.utils.performAppCompatHapticFeedback
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.md3.LocalMd3ShowScrollbar
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -856,7 +856,7 @@ fun QueueBottomSheet(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             contentPadding = PaddingValues(
                                 start = 0.dp,
-                                end = if (LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 26.dp else 0.dp,
+                                end = if (LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)) 26.dp else 0.dp,
                                 bottom = MiniPlayerHeight + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 32.dp
                             )
                         ) {

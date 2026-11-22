@@ -135,7 +135,7 @@ import androidx.mediarouter.media.MediaRouter
 import rigatoni534.apps.PastaPlayer.presentation.screens.TabAnimation
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.BluetoothAudioDeviceState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import android.content.pm.PackageManager
 import androidx.compose.animation.animateColorAsState

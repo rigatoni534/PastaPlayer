@@ -38,8 +38,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import rigatoni534.apps.PastaPlayer.R
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
-import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayStatusBarStyle
+import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.md3.Md3StatusBarStyle
 import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +56,7 @@ fun GenreGradientTopBar(
         Brush.verticalGradient(colors = listOf(startColor, endColor))
     }
 
-    PastaPlayStatusBarStyle(color = startColor)
+    Md3StatusBarStyle(color = startColor)
 
     LargeTopAppBar(
         scrollBehavior = scrollBehavior,
@@ -107,7 +107,7 @@ fun HomeGradientTopBar(
 ) {
     val surfaceContainerHigh = MaterialTheme.colorScheme.surfaceContainerHighest
 
-    PastaPlayStatusBarStyle(color = surfaceContainerHigh)
+    Md3StatusBarStyle(color = surfaceContainerHigh)
 
     val animatedAlpha by animateFloatAsState(
         targetValue = if (isScrolled) 1f else 0f,

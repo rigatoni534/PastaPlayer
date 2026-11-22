@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.worker.SyncProgress
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import kotlin.math.roundToInt
 
 /**

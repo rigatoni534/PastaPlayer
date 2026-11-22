@@ -53,7 +53,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.LoadState
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveScrollBar
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.md3.LocalMd3ShowScrollbar
 import rigatoni534.apps.PastaPlayer.presentation.components.songFastScrollLabel
 import androidx.compose.ui.text.style.TextOverflow
 
@@ -299,7 +299,7 @@ fun LibrarySongsTab(
                         val activeListState = if (songs.itemCount > 0) listState else dummyListState
                         LazyColumn(
                             modifier = Modifier
-                                .padding(start = 12.dp, end = if (LocalShowScrollbar.current && (activeListState.canScrollForward || activeListState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
+                                .padding(start = 12.dp, end = if (LocalMd3ShowScrollbar.current && (activeListState.canScrollForward || activeListState.canScrollBackward)) 22.dp else 12.dp, bottom = 6.dp)
                                 .clip(
                                     RoundedCornerShape(
                                         topStart = 26.dp,

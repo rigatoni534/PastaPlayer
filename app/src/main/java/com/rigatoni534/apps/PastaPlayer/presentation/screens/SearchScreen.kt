@@ -102,7 +102,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.SmartImageListTarget
 import rigatoni534.apps.PastaPlayer.presentation.components.SongInfoBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import android.util.Log
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
+import rigatoni534.apps.md3.LocalMd3DarkTheme
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.PlaylistPlay
 import androidx.compose.material.icons.rounded.History
@@ -267,7 +267,7 @@ fun SearchScreen(
 
     val searchbarCornerRadius = 28.dp
 
-    val dm = LocalPastaPlayDarkTheme.current
+    val dm = LocalMd3DarkTheme.current
 
     val gradientColorsDark = listOf(
         MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),

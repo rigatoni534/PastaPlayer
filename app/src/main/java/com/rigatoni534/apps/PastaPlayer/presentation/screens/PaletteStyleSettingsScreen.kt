@@ -62,14 +62,14 @@ import androidx.compose.ui.res.stringResource
 import rigatoni534.apps.PastaPlayer.R
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
-import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtColorAccuracy
-import rigatoni534.apps.PastaPlayer.data.preferences.AlbumArtPaletteStyle
+import rigatoni534.apps.md3.Md3ColorAccuracy
+import rigatoni534.apps.md3.Md3PaletteStyle
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
-import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemePair
+import rigatoni534.apps.md3.ColorSchemePair
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SettingsViewModel
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
-import rigatoni534.apps.PastaPlayer.ui.theme.generateColorSchemeFromSeed
+import rigatoni534.apps.md3.LocalMd3DarkTheme
+import rigatoni534.apps.md3.generateColorSchemeFromSeed
 import kotlin.math.roundToInt
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -82,7 +82,7 @@ fun PaletteStyleSettingsScreen(
 ) {
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
     val stablePlayerState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
-    val isDarkTheme = LocalPastaPlayDarkTheme.current
+    val isDarkTheme = LocalMd3DarkTheme.current
     val albumSchemePair by playerViewModel.currentAlbumArtColorSchemePair.collectAsStateWithLifecycle()
 
     val baseScheme = MaterialTheme.colorScheme
@@ -106,7 +106,7 @@ fun PaletteStyleSettingsScreen(
     val resolvedSeed = seedColor ?: if (currentSong != null) albumScheme.primary else baseScheme.primary
 
     val styleSchemes = remember(resolvedSeed, isDarkTheme) {
-        AlbumArtPaletteStyle.entries.associateWith { style ->
+        Md3PaletteStyle.entries.associateWith { style ->
             val pair = generateColorSchemeFromSeed(
                 seedColor = resolvedSeed,
                 paletteStyle = style
@@ -224,7 +224,7 @@ fun PaletteStyleSettingsScreen(
                             .padding(top = 4.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        AlbumArtPaletteStyle.entries.forEach { style ->
+                        Md3PaletteStyle.entries.forEach { style ->
                             PaletteSwatchSquare(
                                 scheme = styleSchemes[style] ?: previewScheme,
                                 selected = style == pendingStyle,
@@ -630,7 +630,7 @@ private fun PaletteAccuracySlider(
     hapticsEnabled: Boolean,
     onValueChange: (Int) -> Unit
 ) {
-    val clampedValue = AlbumArtColorAccuracy.clamp(value)
+    val clampedValue = Md3ColorAccuracy.clamp(value)
     val hapticFeedback = LocalHapticFeedback.current
     var lastDispatchedValue by remember { mutableIntStateOf(clampedValue) }
 
@@ -685,7 +685,7 @@ private fun PaletteAccuracySlider(
         Slider(
             value = clampedValue.toFloat(),
             onValueChange = {
-                val nextValue = AlbumArtColorAccuracy.clamp(it.roundToInt())
+                val nextValue = Md3ColorAccuracy.clamp(it.roundToInt())
                 if (nextValue == lastDispatchedValue) return@Slider
 
                 if (hapticsEnabled) {
@@ -694,8 +694,8 @@ private fun PaletteAccuracySlider(
                 lastDispatchedValue = nextValue
                 onValueChange(nextValue)
             },
-            valueRange = AlbumArtColorAccuracy.MIN.toFloat()..AlbumArtColorAccuracy.MAX.toFloat(),
-            steps = AlbumArtColorAccuracy.STEPS,
+            valueRange = Md3ColorAccuracy.MIN.toFloat()..Md3ColorAccuracy.MAX.toFloat(),
+            steps = Md3ColorAccuracy.STEPS,
             colors = SliderDefaults.colors(
                 thumbColor = scheme.primary,
                 activeTrackColor = scheme.primary,
@@ -725,30 +725,30 @@ private fun PaletteAccuracySlider(
 }
 
 @Composable
-private fun albumArtPaletteStyleDescription(style: AlbumArtPaletteStyle): String =
+private fun albumArtPaletteStyleDescription(style: Md3PaletteStyle): String =
     stringResource(
         when (style) {
-            AlbumArtPaletteStyle.TONAL_SPOT -> R.string.settings_palette_style_tonal_spot_desc
-            AlbumArtPaletteStyle.VIBRANT -> R.string.settings_palette_style_vibrant_desc
-            AlbumArtPaletteStyle.EXPRESSIVE -> R.string.settings_palette_style_expressive_desc
-            AlbumArtPaletteStyle.FRUIT_SALAD -> R.string.settings_palette_style_fruit_salad_desc
+            Md3PaletteStyle.TONAL_SPOT -> R.string.settings_palette_style_tonal_spot_desc
+            Md3PaletteStyle.VIBRANT -> R.string.settings_palette_style_vibrant_desc
+            Md3PaletteStyle.EXPRESSIVE -> R.string.settings_palette_style_expressive_desc
+            Md3PaletteStyle.FRUIT_SALAD -> R.string.settings_palette_style_fruit_salad_desc
         }
     )
 
 @Composable
-private fun albumArtPaletteStyleLabel(style: AlbumArtPaletteStyle): String =
+private fun albumArtPaletteStyleLabel(style: Md3PaletteStyle): String =
     stringResource(
         when (style) {
-            AlbumArtPaletteStyle.TONAL_SPOT -> R.string.settings_palette_style_tonal_spot
-            AlbumArtPaletteStyle.VIBRANT -> R.string.settings_palette_style_vibrant
-            AlbumArtPaletteStyle.EXPRESSIVE -> R.string.settings_palette_style_expressive
-            AlbumArtPaletteStyle.FRUIT_SALAD -> R.string.settings_palette_style_fruit_salad
+            Md3PaletteStyle.TONAL_SPOT -> R.string.settings_palette_style_tonal_spot
+            Md3PaletteStyle.VIBRANT -> R.string.settings_palette_style_vibrant
+            Md3PaletteStyle.EXPRESSIVE -> R.string.settings_palette_style_expressive
+            Md3PaletteStyle.FRUIT_SALAD -> R.string.settings_palette_style_fruit_salad
         }
     )
 
 @Composable
 private fun accuracySummaryText(value: Int): String {
-    val clamped = AlbumArtColorAccuracy.clamp(value)
+    val clamped = Md3ColorAccuracy.clamp(value)
     return when {
         clamped == 0 -> stringResource(R.string.settings_palette_style_accuracy_summary_current)
         clamped in 1..3 -> stringResource(R.string.settings_palette_style_accuracy_summary_subtle, clamped)

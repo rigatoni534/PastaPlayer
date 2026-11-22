@@ -107,7 +107,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.FetchLyrics
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.PlayerSeekBar
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.LyricsSearchUiState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.StablePlayerState
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import rigatoni534.apps.PastaPlayer.utils.BubblesLine
 import rigatoni534.apps.PastaPlayer.utils.ProviderText
 import rigatoni534.apps.PastaPlayer.presentation.components.snapping.ExperimentalSnapperApi

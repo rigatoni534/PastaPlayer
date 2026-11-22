@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.database.AiUsageEntity
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Schedule
 import java.text.SimpleDateFormat

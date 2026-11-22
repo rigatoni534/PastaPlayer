@@ -45,7 +45,7 @@ import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.presentation.components.AutoScrollingText
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImage
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

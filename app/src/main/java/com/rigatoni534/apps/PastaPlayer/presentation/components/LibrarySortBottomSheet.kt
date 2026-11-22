@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.Dp
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.data.model.SortDirection
 import rigatoni534.apps.PastaPlayer.data.model.SortOption
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 
 @OptIn(ExperimentalMaterial3Api::class)

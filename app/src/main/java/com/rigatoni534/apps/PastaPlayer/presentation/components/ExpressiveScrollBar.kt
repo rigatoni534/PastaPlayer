@@ -29,7 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.md3.LocalMd3ShowScrollbar
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -226,7 +226,7 @@ fun ExpressiveScrollBar(
     dragLabelSize: Dp = 40.dp,
     dragLabelGap: Dp = 10.dp
 ) {
-    if (!LocalShowScrollbar.current) return
+    if (!LocalMd3ShowScrollbar.current) return
 
     val canScrollForward by remember(listState, gridState) { derivedStateOf { listState?.canScrollForward ?: gridState?.canScrollForward ?: false } }
     val canScrollBackward by remember(listState, gridState) { derivedStateOf { listState?.canScrollBackward ?: gridState?.canScrollBackward ?: false } }

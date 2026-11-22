@@ -41,7 +41,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import androidx.compose.ui.res.stringResource
 import rigatoni534.apps.PastaPlayer.R
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape

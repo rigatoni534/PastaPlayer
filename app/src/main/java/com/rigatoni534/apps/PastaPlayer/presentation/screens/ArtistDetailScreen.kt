@@ -59,9 +59,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
-import rigatoni534.apps.PastaPlayer.ui.theme.PastaPlayStatusBarStyle
+import rigatoni534.apps.md3.LocalMd3DarkTheme
+import rigatoni534.apps.md3.GoogleSansRounded
+import rigatoni534.apps.md3.Md3StatusBarStyle
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.util.lerp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -71,7 +71,7 @@ import rigatoni534.apps.PastaPlayer.data.model.Artist
 import rigatoni534.apps.PastaPlayer.data.model.Song
 import rigatoni534.apps.PastaPlayer.presentation.components.CollapsibleCommonTopBar
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveScrollBar
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.md3.LocalMd3ShowScrollbar
 import rigatoni534.apps.PastaPlayer.presentation.components.MiniPlayerHeight
 import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.SmartImageCompactListTargetSize
@@ -134,7 +134,7 @@ fun ArtistDetailScreen(
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
-    val isDarkTheme = LocalPastaPlayDarkTheme.current
+    val isDarkTheme = LocalMd3DarkTheme.current
     val baseColorScheme = MaterialTheme.colorScheme
 
     // --- Dynamic color palette from pre-warmed ViewModel state ---
@@ -283,7 +283,7 @@ fun ArtistDetailScreen(
                             .forEach { staleKey -> expandedSections.remove(staleKey) }
                     }
 
-                    val isScrollbarEnabled = LocalShowScrollbar.current
+                    val isScrollbarEnabled = LocalMd3ShowScrollbar.current
                     val showScrollBar by remember(isScrollbarEnabled) {
                         derivedStateOf {
                             isScrollbarEnabled &&
@@ -742,7 +742,7 @@ private fun SharedArtistTopBarProbe(
     var showImageMenu by remember { mutableStateOf(false) }
     val surfaceColor = MaterialTheme.colorScheme.surface
     val statusBarColor =
-        if (LocalPastaPlayDarkTheme.current) Color.Black.copy(alpha = 0.6f)
+        if (LocalMd3DarkTheme.current) Color.Black.copy(alpha = 0.6f)
         else Color.White.copy(alpha = 0.4f)
     val solidAlpha = (collapseFraction * 2f).coerceIn(0f, 1f)
     val expandedContentAlpha = 1f - solidAlpha
@@ -769,7 +769,7 @@ private fun SharedArtistTopBarProbe(
     val titleVerticalBias = lerp(1f, -1f, collapseFraction)
     val shuffleAlignment = BiasAlignment(horizontalBias = 1f, verticalBias = titleVerticalBias)
 
-    PastaPlayStatusBarStyle(color = fallbackStatusBarColor)
+    Md3StatusBarStyle(color = fallbackStatusBarColor)
 
     Box(
         modifier = Modifier
@@ -919,7 +919,7 @@ private fun CustomCollapsingTopBar(
     onClearCustomImage: () -> Unit
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surface
-    val statusBarColor = if (LocalPastaPlayDarkTheme.current) Color.Black.copy(alpha = 0.6f) else Color.White.copy(alpha = 0.4f)
+    val statusBarColor = if (LocalMd3DarkTheme.current) Color.Black.copy(alpha = 0.6f) else Color.White.copy(alpha = 0.4f)
 
     // --- Animation Values ---
     val fabScale = 1f - collapseFraction
@@ -968,7 +968,7 @@ private fun CustomCollapsingTopBar(
             .height(headerHeight)
             .clipToBounds()
     ) {
-        PastaPlayStatusBarStyle(color = fallbackStatusBarColor)
+        Md3StatusBarStyle(color = fallbackStatusBarColor)
 
         Box(
             modifier = Modifier

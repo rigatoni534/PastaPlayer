@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import rigatoni534.apps.PastaPlayer.R
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.SineWaveLine
-import rigatoni534.apps.PastaPlayer.ui.theme.ExpTitleTypography
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.ExpTitleTypography
+import rigatoni534.apps.md3.GoogleSansRounded
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 
 data class ChangelogSection(

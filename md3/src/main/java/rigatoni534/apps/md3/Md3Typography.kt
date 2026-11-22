@@ -1,4 +1,4 @@
-package rigatoni534.apps.PastaPlayer.ui.theme
+package rigatoni534.apps.md3
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -12,8 +12,6 @@ import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import rigatoni534.apps.PastaPlayer.R
-
 
 private val montserrat = GoogleFont("Montserrat")
 private val provider = GoogleFont.Provider(
@@ -111,7 +109,7 @@ val GoogleSansRounded = FontFamily(
 
 // Tipografía - Usar fuentes amigables y modernas.
 // Considerar añadir fuentes personalizadas en res/font para un look más único.
-val Typography = Typography(
+val Md3Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = GoogleSansRounded,
         fontWeight = FontWeight.Bold,

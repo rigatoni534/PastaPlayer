@@ -114,7 +114,7 @@ import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlaylistViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.SettingsViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.StatsViewModel
-import rigatoni534.apps.PastaPlayer.ui.theme.ExpTitleTypography
+import rigatoni534.apps.md3.ExpTitleTypography
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay

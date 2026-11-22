@@ -118,7 +118,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalPastaPlayDarkTheme
+import rigatoni534.apps.md3.LocalMd3DarkTheme
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
@@ -160,7 +160,7 @@ import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistCreationType
 import rigatoni534.apps.PastaPlayer.presentation.components.CreateAiPlaylistDialog
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.SelectionActionRow
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.SelectionCountPill
-import rigatoni534.apps.PastaPlayer.presentation.viewmodel.ColorSchemePair
+import rigatoni534.apps.md3.ColorSchemePair
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerUiState
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.PlayerViewModel
 import rigatoni534.apps.PastaPlayer.presentation.viewmodel.StablePlayerState
@@ -231,7 +231,7 @@ import rigatoni534.apps.PastaPlayer.presentation.screens.CreatePlaylistDialog
 import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.PlaylistContainer
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.PlayingEqIcon
-import rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded
+import rigatoni534.apps.md3.GoogleSansRounded
 import java.util.Locale
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
@@ -243,7 +243,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.LoadState
 import rigatoni534.apps.PastaPlayer.presentation.components.ExpressiveScrollBar
-import rigatoni534.apps.PastaPlayer.ui.theme.LocalShowScrollbar
+import rigatoni534.apps.md3.LocalMd3ShowScrollbar
 import rigatoni534.apps.PastaPlayer.presentation.components.LibrarySortBottomSheet
 import rigatoni534.apps.PastaPlayer.presentation.components.subcomps.EnhancedSongListItem
 import rigatoni534.apps.PastaPlayer.data.service.wear.PhoneWatchTransferState
@@ -804,7 +804,7 @@ fun LibraryScreen(
     val bottomBarHeightDp = resolveNavBarOccupiedHeight(systemNavBarInset, navBarCompactMode)
     val bottomGradientHeight = resolveMainScreenBottomGradientHeight(navBarCompactMode)
 
-    val dm = LocalPastaPlayDarkTheme.current
+    val dm = LocalMd3DarkTheme.current
 
     val iconRotation by transition.animateFloat(
         label = "Action Button Icon Rotation",
@@ -1442,7 +1442,7 @@ fun LibraryScreen(
                                         Text(
                                             text = stringResource(R.string.library_telegram_topics_display_title),
                                             style = MaterialTheme.typography.headlineSmall,
-                                            fontFamily = rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded,
+                                            fontFamily = rigatoni534.apps.md3.GoogleSansRounded,
                                             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                                             modifier = Modifier.padding(start = 2.dp, bottom = 8.dp)
                                         )
@@ -1476,7 +1476,7 @@ fun LibraryScreen(
                                         Text(
                                             text = stringResource(R.string.library_cloud_sources_heading),
                                             style = MaterialTheme.typography.headlineSmall,
-                                            fontFamily = rigatoni534.apps.PastaPlayer.ui.theme.GoogleSansRounded,
+                                            fontFamily = rigatoni534.apps.md3.GoogleSansRounded,
                                             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                                             modifier = Modifier.padding(start = 2.dp, bottom = 8.dp)
                                         )
@@ -3088,7 +3088,7 @@ fun LibraryFoldersTab(
                         }
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            val showScrollbar = LocalShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)
+                            val showScrollbar = LocalMd3ShowScrollbar.current && (listState.canScrollForward || listState.canScrollBackward)
                             LazyColumn(
                                 modifier = Modifier
                                     .padding(start = 12.dp, end = if (showScrollbar) 22.dp else 12.dp)
@@ -3310,7 +3310,7 @@ fun AlbumGridItemRedesigned(
     onSelectionToggle: () -> Unit = {}
 ) {
     val albumColorSchemePair by albumColorSchemePairFlow.collectAsStateWithLifecycle()
-    val systemIsDark = LocalPastaPlayDarkTheme.current
+    val systemIsDark = LocalMd3DarkTheme.current
 
     // 1. Obtén el colorScheme del tema actual aquí, en el scope Composable.
     val currentMaterialColorScheme = MaterialTheme.colorScheme
@@ -3589,7 +3589,7 @@ fun AlbumListItem(
     onSelectionToggle: () -> Unit = {}
 ) {
     val albumColorSchemePair by albumColorSchemePairFlow.collectAsStateWithLifecycle()
-    val systemIsDark = LocalPastaPlayDarkTheme.current
+    val systemIsDark = LocalMd3DarkTheme.current
     val currentMaterialColorScheme = MaterialTheme.colorScheme
 
     val itemDesignColorScheme = remember(albumColorSchemePair, systemIsDark, currentMaterialColorScheme) {
